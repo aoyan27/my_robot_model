@@ -1,4 +1,4 @@
-# robot_model
+# my_robot_model
 
 ## How to Build
 ### C++ 
