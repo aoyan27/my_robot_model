@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<launch>
+
+	<rosparam file="$(find infant_control)/config/infant_kinect_control.yaml" command="load"/>
+
+	<node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/infant" args="joint_state_controller 
+							mobile_base_controller 
+							velodyne_top_velocity_controller
+							joint1_position_controller
+							joint2_position_controller
+							joint3_position_controller
+							joint4_position_controller
+							joint5_position_controller
+							joint6_position_controller"/>
+	<!--node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/infant" args="joint_state_controller 
+							mobile_base_controller 
+							velodyne_top_velocity_controller
+							arm_position_trajectory_controller"/-->
+	
+	<node name="robot_state_publisiher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
+		<remap from="/joint_states" to="/infant/joint_states"/>
+	</node>
+
+</launch>

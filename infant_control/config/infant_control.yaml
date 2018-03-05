@@ -1,0 +1,43 @@
+infant:
+    joint_state_controller:
+        type: joint_state_controller/JointStateController
+        publish_rate: 50
+
+    mobile_base_controller:
+        type : "diff_drive_controller/DiffDriveController"
+        publish_rate : 100.0
+
+        left_wheel : 'wheel_left_joint'
+        right_wheel : 'wheel_right_joint'
+
+        wheel_separation : 0.500
+        wheel_radius : 0.14239
+
+        enable_odom_tf : true
+
+        pose_covariance_diagonal : [0.001, 0.001, 0.001, 0.001, 0.001, 0.03]
+        twist_covariance_diagonal : [0.001, 0.001, 0.001, 0.001, 0.001, 0.03]
+
+        base_frame_id : base_link
+
+        linear : 
+            x : 
+                has_velocity_limits     : true
+                max_velocity            : 1.0
+                min_velocity            : -0.6
+                has_acceleration_limits : true
+                max_acceleration        : 0.6
+                min_acceleration        : -0.4
+        angular : 
+            z : 
+                has_velocity_limits     : true
+                max_velocity            : 2.0
+                min_velocity            : -2.0
+                has_acceleration_limits : true
+                max_acceleration        : 6.0
+                min_acceleration        : -6.0
+
+    velodyne_top_velocity_controller:
+        type: velocity_controllers/JointVelocityController
+        joint: velodyne_top_joint
+        pid: {p: 100.0, i: 0.01, d: 10.0}

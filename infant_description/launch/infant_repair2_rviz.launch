@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<launch>
+	<param name="robot_description"
+		command="$(find xacro)/xacro.py '$(find infant_description)/urdf/infant_repair2.urdf.xacro'"/>
+	
+	<!-- send fake joint value -->
+	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+		<param name="use_gui" value="FALSE"/>
+	</node>
+
+	<!-- Combine joint values -->
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher"/>
+
+	<!-- show in Rviz -->
+	<!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find infant_description)/launch/infant.rviz"/> -->
+	<!-- <node pkg="tf" type="static_transform_publisher" name="model_broadcaster" args="0 0 -1.35 0 0 0  /matching_base_link /base_link 100" /> -->
+	<node pkg="tf" type="static_transform_publisher" name="model_broadcaster" args="0 0 0 0 0 0  /matching_base_link /base_link 100" />
+
+</launch>

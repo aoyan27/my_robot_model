@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<robot name="model_test">
+	<link name="base_link">
+		<visual>
+			<geometry>
+				<mesh filename="package://infant_description/meshes/Untitled.dae"/>
+			</geometry>
+		</visual>
+	</link>
+
+</robot>
+

@@ -1,0 +1,1045 @@
+<?xml version="1.0" ?>
+<robot name="infant" xmlns:xacro="http://ros.org/wiki/xacro">
+	
+	<!-- constants for robot dimentions -->
+	<xacro:property name="pi" value="3.141592"/>
+	<xacro:property name="battery_depth" value="0.420"/>
+	<xacro:property name="battery_width" value="0.170"/>
+	<xacro:property name="battery_height" value="0.370"/>
+	<xacro:property name="rocker_bogie_back_depth" value="0.46056514"/>
+	<xacro:property name="rocker_bogie_back_width" value="0.09383127"/>	
+	<xacro:property name="rocker_bogie_back_height" value="0.230"/>
+	<xacro:property name="rocker_bogie_front_depth" value="0.42535668"/>
+	<xacro:property name="rocker_bogie_front_width" value="0.11153324"/>
+	<xacro:property name="rocker_bogie_front_height" value="0.230"/>
+	<xacro:property name="caster_small_length" value="0.065"/>
+	<xacro:property name="caster_small_radius" value="0.010"/>
+	<xacro:property name="caster_large_length" value="0.045"/>
+	<xacro:property name="caster_large_radius" value="0.010"/>
+	<xacro:property name="velodyne_base_length" value="0.0586740"/>
+	<xacro:property name="velodyne_diameter" value="0.0853440"/>
+	<xacro:property name="velodyne_top_length" value="0.0835714"/>
+	<xacro:property name="velodyne_laser_depth" value="0.03475311"/>
+	<xacro:property name="velodyne_laser_height" value="0.0404979"/>
+	<xacro:property name="velodyne_laser_width" value="0.0468099"/>
+
+	<xacro:property name="cam_px" value="0" />
+	<!--	<property name="cam_py" value="-0.0125" /> Y varies for different configurations. get sets in sensors_urdf -->
+	<xacro:property name="cam_pz" value="0" />
+	<xacro:property name="cam_or" value="0" />
+	<xacro:property name="cam_op" value="0" />
+	<xacro:property name="cam_oy" value="0" />
+
+	<xacro:property name="kinect_cam_py" value="-0.0125"/>
+	
+	<!-- inertial for box -->
+	<!--xacro:macro 
+		name="default_box_inertial" 
+		params="mass depth width height x_offset y_offset z_offset">
+		<inertial>
+			<origin xyz="${x_offset} ${y_offset} ${z_offset}" rpy="0 0 0"/>
+			<mass value="${mass}"/>
+			<inertia 
+				ixx="${1/12*mass*(width*width+height*height)}" ixy="0.0" ixz="0.0" 
+				iyy="${1/12*mass*(height*height+depth*depth)}" iyz="0.0" 
+				izz="${1/12*mass*(depth*depth+width*width)}"/>
+		</inertial>
+	</xacro:macro-->
+
+	<!-- inertial for cylinder -->
+	<!--xacro:macro 
+		name="default_cylinder_inertial" 
+		params="mass length radius x_offset y_offset z_offset">
+		<inertial>
+			<origin xyz="${x_offset} ${y_offset} ${z_offset}" rpy="0 0 0"/>
+			<mass value="${mass}"/>
+			<inertia 
+				ixx="${1/12*mass*(3*radius*radius+length*length)}" ixy="0.0" ixz="0.0" 
+				iyy="${1/12*mass*(3*radius*radius+length*length)}" iyz="0.0" 
+				izz="${1/2*mass*radius*radius}"/>
+		</inertial>
+	</xacro:macro-->
+
+	<!-- inertial for wheel -->
+	<!--xacro:macro 
+		name="default_wheel_inertial" 
+		params="mass length radius x_offset y_offset z_offset">
+		<inertial>
+			<origin xyz="${x_offset} ${y_offset} ${z_offset}" rpy="0 0 0"/>	
+			<mass value="${mass}"/>
+			<inertia 
+				ixx="${1/12*mass*(3*radius*radius+length*length)}" ixy="0.0" ixz="0.0" 
+				iyy="${1/2*mass*radius*radius}" iyz="0.0" 
+				izz="${1/12*mass*(3*radius*radius+length*length)}"/>
+		</inertial>
+	</xacro:macro-->
+	
+	<!-- inertial for box -->
+	<xacro:macro 
+		name="default_box_inertial" 
+		params="mass depth width height x_offset y_offset z_offset">
+		<inertial>
+			<origin xyz="${x_offset} ${y_offset} ${z_offset}" rpy="0 0 0"/>
+			<mass value="${mass}"/>
+			<inertia 
+				ixx="1.0" ixy="0.0" ixz="0.0" 
+				iyy="1.0" iyz="0.0" 
+				izz="1.0"/>
+		</inertial>
+	</xacro:macro>
+
+	<!-- inertial for cylinder -->
+	<xacro:macro 
+		name="default_cylinder_inertial" 
+		params="mass length radius x_offset y_offset z_offset">
+		<inertial>
+			<origin xyz="${x_offset} ${y_offset} ${z_offset}" rpy="0 0 0"/>
+			<mass value="${mass}"/>
+			<inertia 
+				ixx="1.0" ixy="0.0" ixz="0.0" 
+				iyy="1.0" iyz="0.0" 
+				izz="1.0"/>
+		</inertial>
+	</xacro:macro>
+
+	<!-- inertial for wheel -->
+	<xacro:macro 
+		name="default_wheel_inertial" 
+		params="mass length radius x_offset y_offset z_offset">
+		<inertial>
+			<origin xyz="${x_offset} ${y_offset} ${z_offset}" rpy="0 0 0"/>	
+			<mass value="${mass}"/>
+			<inertia 
+				ixx="1.0" ixy="0.0" ixz="0.0" 
+				iyy="1.0" iyz="0.0" 
+				izz="1.0"/>
+		</inertial>
+	</xacro:macro>
+
+	<!-- import Rviz color -->
+	<xacro:include filename="$(find infant_description)/materials/materials.xacro"/>
+
+	<!-- import all Gazebo-customization elements, including Gazebo colors -->
+	<xacro:include filename="$(find infant_description)/urdf/infant_kinect.gazebo.xacro"/>
+	
+	<link name="base_link"/>
+
+	<joint name="base_to_battery_joint" type="fixed">
+		<parent link="base_link"/>
+		<child link="battery_link"/>
+		<origin xyz="0 0 0.140" rpy="0 0 0"/>
+	</joint>
+
+	<link name="battery_link">
+		<visual>
+			<geometry>
+				<box size="${battery_depth} ${battery_width} ${battery_height}"/>
+			</geometry>
+			<origin xyz="0 0 0.085" rpy="0 0 0"/>
+			<material name="black"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="${battery_depth} ${battery_width} ${battery_height}"/>
+			</geometry>
+			<origin xyz="0 0 0.085" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_box_inertial 
+			mass="40" depth="${battery_depth}" width="${battery_width}" height="${battery_height}"
+			x_offset="0.0" y_offset="0.0" z_offset="0.085"/>
+	</link>
+
+	<xacro:macro name="rocker_bogie_back" params="prefix reflect1 reflect2">
+		<joint name="rocker_bogie_back_${prefix}_joint" type="fixed">
+			<parent link="battery_link"/>
+			<child link="rocker_bogie_back_${prefix}_link"/>
+			<origin xyz="0 ${reflect1*0.085} 0" rpy="0 0 0"/>
+		</joint>
+		
+		<link name="rocker_bogie_back_${prefix}_link">
+			<visual>
+				<geometry>
+					<mesh filename="package://infant_description/meshes/rocker_bogie_parts_back_${prefix}.dae"/>
+				</geometry>
+				<origin xyz="0 ${reflect2*(-0.020)} 0" rpy="0 ${pi} 0"/>
+			</visual>
+			<collision>
+				<geometry>
+					<box size="${rocker_bogie_back_depth} ${rocker_bogie_back_width} ${rocker_bogie_back_height}"/>
+				</geometry>
+				<origin 
+					xyz="-${(rocker_bogie_back_depth/2)-0.080} ${reflect1*(rocker_bogie_back_width/2)} 0.035" rpy="0 0 0"/>
+			</collision>
+			<xacro:default_box_inertial 
+				mass="5" 
+				depth="${rocker_bogie_back_depth}" 
+				width="${rocker_bogie_back_width}" 
+				height="${rocker_bogie_back_height}" 
+				x_offset="-${(rocker_bogie_back_depth/2)-0.080}" 
+				y_offset="${reflect1*(rocker_bogie_back_width/2)}" 
+				z_offset="0.035"/>
+		</link>
+	</xacro:macro>
+
+	<xacro:rocker_bogie_back prefix="left" reflect1="1" reflect2="0"/>
+	<xacro:rocker_bogie_back prefix="right" reflect1="-1" reflect2="1"/>
+
+	<xacro:macro name="rocker_bogie_front" params="prefix reflect1 reflect2">
+		<joint name="rocker_bogie_front_${prefix}_joint" type="fixed">
+			<parent link="battery_link"/>
+			<child link="rocker_bogie_front_${prefix}_link"/>
+			<origin xyz="0 ${reflect1*0.105} 0" rpy="0 0 0"/>
+		</joint>
+	
+		<link name="rocker_bogie_front_${prefix}_link">
+			<visual>
+				<geometry>
+					<mesh filename="package://infant_description/meshes/rocker_bogie_parts_front_${prefix}.dae"/>
+				</geometry>
+				<origin xyz="0 ${reflect2*(0.020)} 0" rpy="${pi} 0 0"/>
+			</visual>
+			<collision>
+				<geometry>
+					<box size="${rocker_bogie_front_depth} ${rocker_bogie_front_width} ${rocker_bogie_front_height}"/>
+				</geometry>
+				<origin xyz="${(rocker_bogie_front_depth/2)-0.080} ${reflect1*(rocker_bogie_front_width/2)} 0.035" rpy="0 0 0"/>
+			</collision>
+			<xacro:default_box_inertial 
+				mass="5" 
+				depth="${rocker_bogie_front_depth}"
+				width="${rocker_bogie_front_width}"
+				height="${rocker_bogie_front_height}"
+				x_offset="${(rocker_bogie_front_depth/2)-0.080}"
+				y_offset="${reflect1*(rocker_bogie_front_width/2)}"
+				z_offset="0.035"/>
+
+		</link>
+	</xacro:macro>
+
+	<xacro:rocker_bogie_front prefix="left" reflect1="1" reflect2="1"/>
+	<xacro:rocker_bogie_front prefix="right" reflect1="-1" reflect2="0"/>
+
+	<xacro:macro name="caster_small" params="prefix reflect">
+		<joint name="caster_small_${prefix}_joint" type="fixed">
+			<parent link="rocker_bogie_back_${prefix}_link"/>
+			<child link="caster_small_${prefix}_link"/>
+			<origin xyz="-0.360 ${reflect*0.075} 0.070" rpy="0 0 0"/>
+			<axis xyz="0 0 1"/>
+		</joint>
+	
+		<link name="caster_small_${prefix}_link">
+			<visual>
+				<geometry>
+					<mesh filename="package://infant_description/meshes/caster_small.dae"/>
+				</geometry>
+				<origin xyz="0 0 0" rpy="-${pi/2} 0 ${pi/2}"/>
+			</visual>
+			<collision>
+				<geometry>
+					<cylinder length="${caster_small_length}" radius="${caster_small_radius}"/>
+				</geometry>
+				<origin xyz="0 0 -${caster_small_length/2}" rpy="0 0 0"/>
+			</collision>
+			<xacro:default_cylinder_inertial 
+				mass="0.5" length="${caster_small_length}" radius="${caster_small_radius}"
+				x_offset="0.0" y_offset="0.0" z_offset="-${caster_small_length/2}"/>
+		</link>
+	</xacro:macro>
+	
+	<xacro:caster_small prefix="left" reflect="1"/>
+	<xacro:caster_small prefix="right" reflect="-1"/>
+
+	<xacro:macro name="caster_large" params="prefix reflect">
+		<joint name="caster_large_${prefix}_joint" type="fixed">
+			<parent link="rocker_bogie_front_${prefix}_link"/>
+			<child link="caster_large_${prefix}_link"/>
+			<origin xyz="0.330 ${reflect*0.095} 0.070" rpy="0 0 0"/>
+			<axis xyz="0 0 1"/>
+		</joint>
+	
+		<link name="caster_large_${prefix}_link">
+			<visual>
+				<geometry>
+					<mesh filename="package://infant_description/meshes/caster_large.dae"/>
+				</geometry>
+				<origin xyz="0 0 0" rpy="-${pi/2} 0 ${pi/2}"/>
+			</visual>
+			<collision>
+				<geometry>
+					<cylinder length="${caster_large_length}" radius="${caster_large_radius}"/>
+				</geometry>
+				<origin xyz="0 0 -${caster_large_length/2}" rpy="0 0 0"/>
+			</collision>
+			<xacro:default_cylinder_inertial 
+				mass="0.5" length="${caster_large_length}" radius="${caster_large_radius}"
+				x_offset="0.0" y_offset="0.0" z_offset="-${caster_large_length/2}"/>
+		</link>
+	</xacro:macro>
+
+	<xacro:caster_large prefix="left" reflect="1"/>
+	<xacro:caster_large prefix="right" reflect="-1"/>
+	
+	<xacro:macro name="wheel" params="prefix reflect">
+		<joint name="wheel_${prefix}_joint" type="continuous">
+			<parent link="rocker_bogie_front_${prefix}_link"/>
+			<child link="wheel_${prefix}_link"/>
+			<origin xyz="0 ${reflect*0.145} 0" rpy="0 0 0"/>
+			<axis xyz="0 1 0"/>
+		</joint>
+	
+		<link name="wheel_${prefix}_link">
+			<visual>
+				<geometry>
+					<cylinder length="0.100" radius="0.14240"/>
+				</geometry>
+				<origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+				<material name="ivory"/>
+			</visual>
+			<collision>
+				<geometry>
+					<cylinder length="0.100" radius="0.14240"/>
+				</geometry>
+				<origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+			</collision>
+			<xacro:default_wheel_inertial 
+				mass="4" length="0.100" radius="0.142240" 
+				x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+		</link>
+	</xacro:macro>
+
+	<xacro:wheel prefix="left" reflect="1"/>
+	<xacro:wheel prefix="right" reflect="-1"/>
+
+	<xacro:macro name="wheel_small" params="prefix">
+		<joint name="wheel_small_${prefix}_joint" type="fixed">
+			<parent link="caster_small_${prefix}_link"/>
+			<child link="wheel_small_${prefix}_link"/>
+			<origin xyz="0 0 -0.145" rpy="0 0 0"/>
+			<axis xyz="0 1 0"/>
+		</joint>
+	
+		<link name="wheel_small_${prefix}_link">
+			<visual>
+				<geometry>
+					<cylinder length="0.030" radius="0.070"/>
+				</geometry>
+				<origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+				<material name="black"/>
+			</visual>
+			<collision>
+				<geometry>
+					<cylinder length="0.030" radius="0.070"/>
+				</geometry>
+				<origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+			</collision>
+			<xacro:default_wheel_inertial 
+				mass="1.5" length="0.030" radius="0.070"
+				x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+		</link>
+	</xacro:macro>
+
+	<xacro:wheel_small prefix="left"/>
+	<xacro:wheel_small prefix="right"/>
+
+	<xacro:macro name="wheel_large" params="prefix">
+		<joint name="wheel_large_${prefix}_joint" type="fixed">
+			<parent link="caster_large_${prefix}_link"/>
+			<child link="wheel_large_${prefix}_link"/>
+			<origin xyz="0 0 -0.130" pry="0 0 0"/>
+			<axis xyz="0 1 0"/>
+		</joint>
+
+		<link name="wheel_large_${prefix}_link">
+			<visual>
+				<geometry>
+					<cylinder length="0.040" radius="0.080"/>
+				</geometry>
+				<origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+				<material name="black"/>
+			</visual>
+			<collision>
+				<geometry>
+					<cylinder length="0.040" radius="0.080"/>
+				</geometry>
+				<origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+			</collision>
+			<xacro:default_wheel_inertial 
+				mass="1.5" length="0.040" radius="0.080"
+				x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+		</link>
+	</xacro:macro>
+
+	<xacro:wheel_large prefix="left"/>
+	<xacro:wheel_large prefix="right"/>
+
+	<joint name="box_joint" type="fixed">
+		<parent link="battery_link"/>
+		<child link="box_link"/>
+		<origin xyz="0 0 0.450" rpy="0 0 0"/>
+	</joint>
+
+	<link name="box_link">
+		<visual>
+			<geometry>
+				<box size="0.720 0.500 0.360"/>
+			</geometry>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.720 0.500 0.360"/>
+			</geometry>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_box_inertial 
+			mass="30" depth="0.720" width="0.500" height="0.360"
+			x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+	</link>
+
+	<joint name="mast_joint" type="fixed">
+		<parent link="box_link"/>
+		<child link="mast_link"/>
+		<origin xyz="0 0 0.420" rpy="0 0 0"/>
+	</joint>
+
+	<link name="mast_link">
+		<visual>
+			<geometry>
+				<box size="0.100 0.100 0.480"/>
+			</geometry>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<material name="lightgray"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.100 0.100 0.480"/>
+			</geometry>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_box_inertial 
+			mass="10" depth="0.100" width="0.100" height="0.480"
+			x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+	</link>
+
+	<joint name="table_joint" type="fixed">
+		<parent link="mast_link"/>
+		<child link="table_link"/>
+		<origin xyz="0 0 0.246" rpy="0 0 0"/>
+	</joint>
+
+	<link name="table_link">
+		<visual>
+			<geometry>
+				<box size="0.200 0.200 0.006"/>
+			</geometry>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<material name="ivory"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.200 0.200 0.006"/>
+			</geometry>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_box_inertial 
+			mass="1" depth="0.200" width="0.200" height="0.006"
+			x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+	</link>
+
+	<!-- velodyne -->
+	<joint name="velodyne_base_joint" type="fixed">
+		<parent link="table_link"/>
+		<child link="velodyne_base_link"/>
+		<origin xyz="0 0 0.003" rpy="0 0 0"/>
+	</joint>
+
+	<link name="velodyne_base_link">
+		<visual>
+			<geometry>
+				<cylinder length="${velodyne_base_length}" radius="${velodyne_diameter/2}"/>
+			</geometry>
+			<origin xyz="0 0 ${velodyne_base_length/2}" rpy="0 0 0"/>
+			<material name="darkgray"/>
+		</visual>
+		<collision>
+			<geometry>
+				<cylinder length="${velodyne_base_length}" radius="${velodyne_diameter/2}"/>
+			</geometry>
+			<origin xyz="0 0 ${velodyne_base_length/2}" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_cylinder_inertial 
+			mass="1.0" length="${velodyne_base_length}" radius="${velodyne_diameter/2}"
+			x_offset="0.0" y_offset="0.0" z_offset="${velodyne_base_length/2}"/>
+	</link>
+
+	<joint name="velodyne_top_joint" type="continuous">
+		<parent link="velodyne_base_link"/>
+		<child link="velodyne_top_link"/>
+		<origin xyz="0 0 ${velodyne_base_length}" rpy="0 0 0"/>
+		<axis xyz="0 0 1"/>
+	</joint>
+
+	<link name="velodyne_top_link">
+		<visual>
+			<geometry>
+				<mesh filename="package://infant_description/meshes/velodyne_top.dae"/>
+			</geometry>
+			<origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+		</visual>
+		<collision>
+			<geometry>
+				<cylinder length="${velodyne_top_length}" radius="${velodyne_diameter/2}"/>
+			</geometry>
+			<origin xyz="0 0 ${velodyne_top_length/2}" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_cylinder_inertial 
+			mass="0.0001" length="${velodyne_top_length}" radius="${velodyne_diameter/2}"
+			x_offset="0.0" y_offset="0.0" z_offset="${velodyne_top_length/2}"/>
+	</link>
+
+	<joint name="velodyne_laser_joint" type="fixed">
+		<parent link="velodyne_top_link"/>
+		<child link="velodyne_laser_link"/>
+		<origin xyz="0 0 ${0.0069204+(velodyne_laser_height/2)}" rpy="0 0 0"/>
+	</joint>
+
+	<link name="velodyne_laser_link">
+		<visual>
+			<geometry>
+				<box size="${velodyne_laser_depth} ${velodyne_laser_width} ${velodyne_laser_height}"/>
+			</geometry>
+			<origin xyz="${velodyne_laser_depth/2} 0 0" rpy="0 0 0"/>
+			<material name="lase_black"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="${velodyne_laser_depth} ${velodyne_laser_width} ${velodyne_laser_height}"/>
+			</geometry>
+			<origin xyz="${velodyne_laser_depth/2} 0 0" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_box_inertial
+			mass="0.0001" 
+			depth="${velodyne_laser_depth}" 
+			width="${velodyne_laser_width}" 
+			height="${velodyne_laser_height}"
+			x_offset="${velodyne_laser_depth/2}"
+			y_offset="0.0"
+			z_offset="0.0"/>
+	</link>
+
+	<!--joint name="velodyne_laser2_joint" type="fixed">
+		<parent link="velodyne_top_link"/>
+		<child link="velodyne_laser2_link"/>
+		<origin xyz="0 0 ${0.0069204+(velodyne_laser_height/2)}" rpy="-${pi/2} 0 ${pi/2}"/>
+	</joint>
+
+	<link name="velodyne_laser2_link"/>
+
+	<joint name="velodyne_laser3_joint" type="fixed">
+		<parent link="velodyne_top_link"/>
+		<child link="velodyne_laser3_link"/>
+		<origin xyz="0 0 ${0.0069204+(velodyne_laser_height/2)}" rpy="-${pi/2} 0 ${pi}"/>
+	</joint>
+
+	<link name="velodyne_laser3_link"/>
+	
+	<joint name="velodyne_laser4_joint" type="fixed">
+		<parent link="velodyne_top_link"/>
+		<child link="velodyne_laser4_link"/>
+		<origin xyz="0 0 ${0.0069204+(velodyne_laser_height/2)}" rpy="-${pi/2} 0 -${pi/2}"/>
+	</joint>
+
+	<link name="velodyne_laser4_link"/>
+
+	<joint name="velodyne_laser5_joint" type="fixed">
+		<parent link="velodyne_top_link"/>
+		<child link="velodyne_laser5_link"/>
+		<origin xyz="0 0 ${0.0069204+(velodyne_laser_height/2)}" rpy="-${pi/2} 0 ${pi/4}"/>
+	</joint>
+
+	<link name="velodyne_laser5_link"/>
+
+	<joint name="velodyne_laser6_joint" type="fixed">
+		<parent link="velodyne_top_link"/>
+		<child link="velodyne_laser6_link"/>
+		<origin xyz="0 0 ${0.0069204+(velodyne_laser_height/2)}" rpy="-${pi/2} 0 ${3*pi/4}"/>
+	</joint>
+
+	<link name="velodyne_laser6_link"/>
+
+	<joint name="velodyne_laser7_joint" type="fixed">
+		<parent link="velodyne_top_link"/>
+		<child link="velodyne_laser7_link"/>
+		<origin xyz="0 0 ${0.0069204+(velodyne_laser_height/2)}" rpy="-${pi/2} 0 -${pi/4}"/>
+	</joint>
+
+	<link name="velodyne_laser7_link"/>
+
+	<joint name="velodyne_laser8_joint" type="fixed">
+		<parent link="velodyne_top_link"/>
+		<child link="velodyne_laser8_link"/>
+		<origin xyz="0 0 ${0.0069204+(velodyne_laser_height/2)}" rpy="-${pi/2} 0 -${3*pi/4}"/>
+	</joint>
+
+	<link name="velodyne_laser8_link"/-->
+
+	<!-- kinect -->
+	<joint name="kinect_base_joint" type="fixed">
+		<parent link="mast_link"/>
+		<child link="kinect_base_link"/>
+		<origin rpy="0 0 0" xyz="${0.050+0.035} 0 0"/>
+	</joint>
+	
+	<link name="kinect_base_link">
+		<visual>
+			<geometry>
+				<box size="0.070 0.080 0.002"/>
+			</geometry>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.070 0.080 0.002"/>
+			</geometry>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+		</collision>
+		<xacro:default_box_inertial 
+			mass="0.05" depth="0.070" width="0.080" height="0.002"
+			x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+	</link>
+	
+	<joint name="kinect_link_joint" type="fixed">
+		<parent link="kinect_base_link"/>
+		<child link="kinect_link"/>
+		<origin rpy="0 0 0" xyz="0 0 0.052"/>
+	</joint>
+	
+	<link name="kinect_link"/>
+	
+	<joint name="camera_rgb_joint" type="fixed">
+		<parent link="kinect_link"/>
+		<child link="camera_rgb_frame"/>
+		<origin rpy="${cam_or} ${cam_op} ${cam_oy}" xyz="${cam_px} ${kinect_cam_py} ${cam_pz}"/>
+	</joint>
+	
+	<link name="camera_rgb_frame"/>
+	
+	<joint name="camera_rgb_optical_joint" type="fixed">
+		<parent link="camera_rgb_frame"/>
+		<child link="camera_rgb_optical_frame"/>
+		<origin rpy="${-pi/2} 0 ${-pi/2}" xyz="0 0 0"/>
+	</joint>
+  
+	<link name="camera_rgb_optical_frame"/>
+  
+	<joint name="camera_joint" type="fixed">
+		<parent link="camera_rgb_frame"/>
+		<child link="camera_link"/>
+		<origin rpy="0 0 0" xyz="0.0 ${-kinect_cam_py} -0.016"/>
+	</joint>
+  
+	<link name="camera_link">
+		<visual>
+			<geometry>
+				<mesh filename="package://infant_description/meshes/kinect.dae"/>
+			</geometry>
+			<origin rpy="0 0 ${pi/2}" xyz="0 0 0"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.072 0.277 0.073"/>
+			</geometry>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+		</collision>
+		<xacro:default_inertial 
+			mass="0.564" depth="0.072" width="0.277" height="0.073"
+			x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+	</link>
+	
+	<joint name="camera_depth_joint" type="fixed">
+		<parent link="camera_rgb_frame"/>
+		<child link="camera_depth_frame"/>
+		<origin rpy="0 0 0" xyz="0 ${2 * -kinect_cam_py} 0"/>
+	</joint>
+	
+	<link name="camera_depth_frame"/>
+	
+	<joint name="camera_depth_optical_joint" type="fixed">
+		<parent link="camera_depth_frame"/>
+		<child link="camera_depth_optical_frame"/>
+		<origin rpy="${-pi/2} 0 ${-pi/2}" xyz="0 0 0"/>
+	</joint>
+	
+	<link name="camera_depth_optical_frame"/>
+  
+	
+	
+	<!-- Dynamixel Arm -->
+	<joint name="arm_base_joint" type="fixed">
+		<parent link="box_link"/>
+		<child link="arm_base_link"/>
+		<origin xyz="${0.720/2-0.040+0.10} 0 ${0.360/2}" rpy="${pi} 0 0"/>
+	</joint>
+	
+	<link name="arm_base_link">
+		<visual>
+			<geometry>
+				<cylinder length="0.040" radius="0.040"/>
+			</geometry>
+			<origin xyz="0 0 ${0.040/2}" rpy="0 0 0"/>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<geometry>
+				<cylinder length="0.040" radius="0.040"/>
+			</geometry>
+			<origin xyz="0 0 ${0.040/2}" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_cylinder_inertial
+			mass="0.4" length="0.040" radius="0.040"
+			x_offset="0.0" y_offset="0.0" z_offset="-${0.040/2}"/>
+	</link>
+
+	<joint name="joint1" type="revolute">
+		<parent link="arm_base_link"/>
+		<child link="link1"/>
+		<origin xyz="0 0 ${0.040}" rpy="0 0 0"/>
+		<axis xyz="0 0 1"/>
+		<limit effort="6.0" lower="-${175/180*pi}" upper="${175/180*pi}" velocity="${11/6*pi}"/>
+	</joint>
+
+	<link name="link1">
+		<visual>
+			<geometry>
+				<box size="0.035 0.070 0.050"/>
+			</geometry>
+			<origin xyz="0 0 ${0.050/2}" rpy="0 0 0"/>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.035 0.070 0.050"/>
+			</geometry>
+			<origin xyz="0 0 ${0.050/2}" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_box_inertial
+			mass="0.4" depth="0.035" width="0.070" height="0.050"
+			x_offset="0.31" y_offset="0.0" z_offset="${0.050/2}"/>
+	</link>
+
+	<joint name="joint2" type="revolute">
+		<parent link="link1"/>
+		<child link="link2"/>
+		<origin xyz="0 0 ${0.050}" rpy="0 0 0"/>
+		<axis xyz="0 -1 0"/>
+		<limit effort="${2*6.0}" lower="-${95/180*pi}" upper="${95/180*pi}" velocity="${11/6*pi}"/>
+	</joint>
+
+	<link name="link2">
+		<visual>
+			<geometry>
+				<box size="0.035 0.035 0.150"/>
+			</geometry>
+			<origin xyz="0 0 ${0.150/2}" rpy="0 0 0"/>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.035 0.035 0.150"/>
+			</geometry>
+			<origin xyz="0 0 ${0.150/2}" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_box_inertial
+			mass="0.3" depth="0.035" width="0.035" height="0.150"
+			x_offset="0.0" y_offset="0.0" z_offset="${0.150}"/>
+	</link>
+
+	<joint name="joint3" type="revolute">
+		<parent link="link2"/>
+		<child link="link3"/>
+		<origin xyz="0 0 0.150" rpy="0 0 0"/>
+		<axis xyz="0 1 0"/>
+		<limit effort="${2*6.0}" lower="-${10/180*pi}" upper="${150/180*pi}" velocity="${11/6*pi}"/>
+	</joint>
+
+	<link name="link3">
+		<visual>
+			<geometry>
+				<box size="0.035 0.035 0.060"/>
+			</geometry>
+			<origin xyz="0 0 ${0.060/2}" rpy="0 0 0"/>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.035 0.035 0.060"/>
+			</geometry>
+			<origin xyz="0 0 ${0.060/2}" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_box_inertial 
+			mass="0.2" depth="0.035" width="0.035" height="0.060"
+			x_offset="0.0" y_offset="0.0" z_offset="${0.060}"/>
+	</link>
+		
+	<joint name="joint4" type="revolute">
+		<parent link="link3"/>
+		<child link="link4"/>
+		<origin xyz="0 0 ${0.060}" rpy="0 0 0"/>
+		<axis xyz="0 0 1"/>
+		<limit effort="6.0" lower="-${175/180*pi}" upper="${175/180*pi}" velocity="${11/6*pi}"/>
+	</joint>
+
+	<link name="link4">
+		<visual>
+			<geometry>
+				<box size="0.035 0.035 0.0975"/>
+			</geometry>
+			<origin xyz="0 0 ${0.0975/2}" rpy="0 0 0"/>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.035 0.035 0.0975"/>
+			</geometry>
+			<origin xyz="0 0 ${0.0975/2}" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_box_inertial
+			mass="0.2" depth="0.035" width="0.035" height="0.060"
+			x_offset="0.0" y_offset="0.0" z_offset="${0.0975/2}"/>
+	</link>
+
+	<joint name="joint5" type="revolute">
+		<parent link="link4"/>
+		<child link="link5"/>
+		<origin xyz="0 0 ${0.0975}" rpy="0 0 0"/>
+		<axis xyz="0 -1 0"/>
+		<limit effort="6.0" lower="-${95/180*pi}" upper="${95/180*pi}" velocity="${11/6*pi}"/>
+	</joint>
+
+	<link name="link5">
+		<visual>
+			<origin xyz="0 0 ${0.061/2}" rpy="0 0 0" />
+			<geometry>
+				<box size="0.024 0.0475 0.061" />
+			</geometry>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<origin xyz="0 0 ${0.061/2}" rpy="0 0 0" />
+			<geometry>
+				<box size="0.024 0.0475 0.061" />
+			</geometry>
+		</collision>
+			
+
+		<visual>
+			<origin xyz="0 ${0.03295-0.005} ${0.065727241+0.003}" rpy="-0.52359878 0 0" />
+			<geometry>
+				<box size="0.034 0.0014 0.019" />
+			</geometry>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<origin xyz="0 ${0.03295-0.005} ${0.065727241+0.003}" rpy="-0.52359878 0 0" />
+			<geometry>
+				<box size="0.034 0.0014 0.019" />
+			</geometry>
+		</collision>
+
+		<visual>
+			<origin xyz="0 ${0.0377-0.005} ${0.09665+0.003}" rpy="0 0 0" />
+			<geometry>
+				<box size="0.034 0.0014 0.0454" />
+			</geometry>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<origin xyz="0 ${0.0377-0.005} ${0.09665+0.003}" rpy="0 0 0" />
+			<geometry>
+				<box size="0.034 0.0014 0.0454" />
+			</geometry>
+		</collision>
+
+		<xacro:default_box_inertial
+			mass="0.2" depth="0.024" width="0.0475" height="0.061"
+			x_offset="0.0" y_offset="0.0" z_offset="${0.061/2}"/>
+
+	</link>
+
+	<joint name="joint6" type="revolute">
+		<parent link="link5"/>
+		<child link="link6"/>
+		<origin xyz="0 -0.0145 0.045" rpy="0 0 0"/>
+		<axis xyz="-1 0 0"/>
+		<limit effort="6.0" lower="-${40/180*pi}" upper="${35/180*pi}" velocity="${11/6*pi}"/>
+	</joint>
+
+	<link name="link6">
+		<visual>
+			<origin xyz="0 0 0" rpy="0 1.57079632675 0" />
+			<geometry>
+				<cylinder radius="0.012" length="0.0475" />
+			</geometry>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="0 1.57079632675 0" />
+			<geometry>
+				<cylinder radius="0.012" length="0.0475" />
+			</geometry>
+		</collision>
+
+		<visual>
+			<origin xyz="0 -0.013 0" rpy="0 0 0" />
+			<geometry>
+				<box size="0.0475 0.026 0.024" />
+			</geometry>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<origin xyz="0 -0.013 0" rpy="0 0 0" />
+			<geometry>
+				<box size="0.0475 0.026 0.024" />
+			</geometry>
+		</collision>
+
+		<visual>
+			<origin xyz="0 -0.0267 0.023" rpy="0 0 0" />
+			<geometry>
+				<box size="0.034 0.0014 0.070" />
+			</geometry>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<origin xyz="0 -0.0267 0.023" rpy="0 0 0" />
+			<geometry>
+				<box size="0.034 0.0014 0.070" />
+			</geometry>
+		</collision>
+
+		<visual>
+			<origin xyz="0 -0.0166252378 0.07545" rpy="-0.52359878 0 0" />
+			<geometry>
+				<box size="0.034 0.0014 0.040299" />
+			</geometry>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<origin xyz="0 -0.0166252378 0.07545" rpy="-0.52359878 0 0" />
+			<geometry>
+				<box size="0.034 0.0014 0.040299" />
+			</geometry>
+		</collision>
+
+		<xacro:default_box_inertial 
+			mass="0.1" depth="0.0475" width="0.026" height="0.024"
+			x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+
+	</link>
+
+	<!-- transmission for Dynamixel Arm-->
+	<transmission name="tran1">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="joint1">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="motor1">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+	<transmission name="tran2">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="joint2">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="motor2">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+	<transmission name="tran3">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="joint3">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="motor3">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+	<transmission name="tran4">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="joint4">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="motor4">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+	<transmission name="tran5">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="joint5">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="motor5">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+	
+	<transmission name="tran6">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="joint6">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="motor6">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+
+	<!-- transmission -->
+	<transmission name="wheel_left_trans">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="wheel_left_joint">
+			<hardwareInterface>VelocityJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="wheel_left_motor">
+			<hardwareInterface>VelocityJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+
+	<transmission name="wheel_right_trans">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="wheel_right_joint">
+			<hardwareInterface>VelocityJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="wheel_right_motor">
+			<hardwareInterface>VelocityJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+	<transmission name="velodyne_top_trans">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="velodyne_top_joint">
+			<hardwareInterface>VelocityJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="velodyne_top_motor">
+			<hardwareInterface>VelocityJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+</robot>

@@ -1,0 +1,1369 @@
+<?xml version="1.0" ?>
+<robot name="infant" xmlns:xacro="http://ros.org/wiki/xacro">
+	
+	<!-- constants for robot dimentions -->
+	<xacro:property name="pi" value="3.141592"/>
+	<xacro:property name="battery_depth" value="0.370"/>
+	<xacro:property name="battery_width" value="0.170"/>
+	<xacro:property name="battery_height" value="0.415"/>
+	<xacro:property name="rocker_bogie_back_depth" value="0.46056514"/>
+	<xacro:property name="rocker_bogie_back_width" value="0.09383127"/>	
+	<xacro:property name="rocker_bogie_back_height" value="0.230"/>
+	<xacro:property name="rocker_bogie_front_depth" value="0.42535668"/>
+	<xacro:property name="rocker_bogie_front_width" value="0.11153324"/>
+	<xacro:property name="rocker_bogie_front_height" value="0.230"/>
+	<xacro:property name="caster_small_length" value="0.065"/>
+	<xacro:property name="caster_small_radius" value="0.010"/>
+	<xacro:property name="caster_large_length" value="0.045"/>
+	<xacro:property name="caster_large_radius" value="0.010"/>
+	<xacro:property name="velodyne_base_length" value="0.0586740"/>
+	<xacro:property name="velodyne_diameter" value="0.0853440"/>
+	<xacro:property name="velodyne_top_length" value="0.0835714"/>
+	<xacro:property name="velodyne_laser_depth" value="0.03475311"/>
+	<xacro:property name="velodyne_laser_height" value="0.0404979"/>
+	<xacro:property name="velodyne_laser_width" value="0.0468099"/>
+
+	<xacro:property name="cam_px" value="0" />
+	<!--	<property name="cam_py" value="-0.0125" /> Y varies for different configurations. get sets in sensors_urdf -->
+	<xacro:property name="cam_pz" value="0" />
+	<xacro:property name="cam_or" value="0" />
+	<xacro:property name="cam_op" value="0" />
+	<xacro:property name="cam_oy" value="0" />
+
+	<xacro:property name="kinect_cam_py" value="-0.0125"/>
+	
+	<!-- inertial for box -->
+	<!--xacro:macro 
+		name="default_box_inertial" 
+		params="mass depth width height x_offset y_offset z_offset">
+		<inertial>
+			<origin xyz="${x_offset} ${y_offset} ${z_offset}" rpy="0 0 0"/>
+			<mass value="${mass}"/>
+			<inertia 
+				ixx="${1/12*mass*(width*width+height*height)}" ixy="0.0" ixz="0.0" 
+				iyy="${1/12*mass*(height*height+depth*depth)}" iyz="0.0" 
+				izz="${1/12*mass*(depth*depth+width*width)}"/>
+		</inertial>
+	</xacro:macro-->
+
+	<!-- inertial for cylinder -->
+	<!--xacro:macro 
+		name="default_cylinder_inertial" 
+		params="mass length radius x_offset y_offset z_offset">
+		<inertial>
+			<origin xyz="${x_offset} ${y_offset} ${z_offset}" rpy="0 0 0"/>
+			<mass value="${mass}"/>
+			<inertia 
+				ixx="${1/12*mass*(3*radius*radius+length*length)}" ixy="0.0" ixz="0.0" 
+				iyy="${1/12*mass*(3*radius*radius+length*length)}" iyz="0.0" 
+				izz="${1/2*mass*radius*radius}"/>
+		</inertial>
+	</xacro:macro-->
+
+	<!-- inertial for wheel -->
+	<!--xacro:macro 
+		name="default_wheel_inertial" 
+		params="mass length radius x_offset y_offset z_offset">
+		<inertial>
+			<origin xyz="${x_offset} ${y_offset} ${z_offset}" rpy="0 0 0"/>	
+			<mass value="${mass}"/>
+			<inertia 
+				ixx="${1/12*mass*(3*radius*radius+length*length)}" ixy="0.0" ixz="0.0" 
+				iyy="${1/2*mass*radius*radius}" iyz="0.0" 
+				izz="${1/12*mass*(3*radius*radius+length*length)}"/>
+		</inertial>
+	</xacro:macro-->
+	
+	<!-- inertial for box -->
+	<xacro:macro 
+		name="default_box_inertial" 
+		params="mass depth width height x_offset y_offset z_offset">
+		<inertial>
+			<origin xyz="${x_offset} ${y_offset} ${z_offset}" rpy="0 0 0"/>
+			<mass value="${mass}"/>
+			<inertia 
+				ixx="1.0" ixy="0.0" ixz="0.0" 
+				iyy="1.0" iyz="0.0" 
+				izz="1.0"/>
+		</inertial>
+	</xacro:macro>
+
+	<!-- inertial for cylinder -->
+	<xacro:macro 
+		name="default_cylinder_inertial" 
+		params="mass length radius x_offset y_offset z_offset">
+		<inertial>
+			<origin xyz="${x_offset} ${y_offset} ${z_offset}" rpy="0 0 0"/>
+			<mass value="${mass}"/>
+			<inertia 
+				ixx="1.0" ixy="0.0" ixz="0.0" 
+				iyy="1.0" iyz="0.0" 
+				izz="1.0"/>
+		</inertial>
+	</xacro:macro>
+
+	<!-- inertial for wheel -->
+	<xacro:macro 
+		name="default_wheel_inertial" 
+		params="mass length radius x_offset y_offset z_offset">
+		<inertial>
+			<origin xyz="${x_offset} ${y_offset} ${z_offset}" rpy="0 0 0"/>	
+			<mass value="${mass}"/>
+			<inertia 
+				ixx="1.0" ixy="0.0" ixz="0.0" 
+				iyy="1.0" iyz="0.0" 
+				izz="1.0"/>
+		</inertial>
+	</xacro:macro>
+
+	<!-- import Rviz color -->
+	<xacro:include filename="$(find infant_description)/materials/materials.xacro"/>
+
+	<!-- import all Gazebo-customization elements, including Gazebo colors -->
+	<xacro:include filename="$(find infant_description)/urdf/infant_repair.gazebo.xacro"/>
+	<link name="world"/>
+
+	<joint name="fixed" type="fixed">
+		<parent link="world"/>
+		<child link="base_link"/>
+		<origin xyz="0 0 0" rpy="0 0 0"/>
+	</joint>
+
+
+	<!-- rocker bogie -->
+	<link name="base_link"/>
+
+	<joint name="base_to_battery_joint" type="fixed">
+		<parent link="base_link"/>
+		<child link="battery_link"/>
+		<!-- <origin xyz="0 0 0.140" rpy="0 0 0"/> -->
+		<origin xyz="0 0 0.145" rpy="0 0 0"/>
+	</joint>
+
+	<link name="battery_link">
+		<visual>
+			<geometry>
+				<box size="${battery_depth} ${battery_width} ${battery_height}"/>
+			</geometry>
+			<origin xyz="0 0 0.1075" rpy="0 0 0"/>
+			<material name="black"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="${battery_depth} ${battery_width} ${battery_height}"/>
+			</geometry>
+			<origin xyz="0 0 0.1075" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_box_inertial 
+			mass="40" depth="${battery_depth}" width="${battery_width}" height="${battery_height}"
+			x_offset="0.0" y_offset="0.0" z_offset="0.085"/>
+	</link>
+
+	<xacro:macro name="rocker_bogie_back" params="prefix reflect1 reflect2">
+		<joint name="rocker_bogie_back_${prefix}_joint" type="fixed">
+			<parent link="battery_link"/>
+			<child link="rocker_bogie_back_${prefix}_link"/>
+			<origin xyz="0 ${reflect1*0.085} 0" rpy="0 0 0"/>
+		</joint>
+		
+		<link name="rocker_bogie_back_${prefix}_link">
+			<visual>
+				<geometry>
+					<mesh filename="package://infant_description/meshes/rocker_bogie_parts_back_${prefix}.dae"/>
+				</geometry>
+				<origin xyz="0 ${reflect2*(-0.020)} 0" rpy="0 ${pi} 0"/>
+			</visual>
+			<collision>
+				<geometry>
+					<box size="${rocker_bogie_back_depth} ${rocker_bogie_back_width} ${rocker_bogie_back_height}"/>
+				</geometry>
+				<origin 
+					xyz="-${(rocker_bogie_back_depth/2)-0.080} ${reflect1*(rocker_bogie_back_width/2)} 0.035" rpy="0 0 0"/>
+			</collision>
+			<xacro:default_box_inertial 
+				mass="5" 
+				depth="${rocker_bogie_back_depth}" 
+				width="${rocker_bogie_back_width}" 
+				height="${rocker_bogie_back_height}" 
+				x_offset="-${(rocker_bogie_back_depth/2)-0.080}" 
+				y_offset="${reflect1*(rocker_bogie_back_width/2)}" 
+				z_offset="0.035"/>
+		</link>
+	</xacro:macro>
+
+	<xacro:rocker_bogie_back prefix="left" reflect1="1" reflect2="0"/>
+	<xacro:rocker_bogie_back prefix="right" reflect1="-1" reflect2="1"/>
+
+	<xacro:macro name="rocker_bogie_front" params="prefix reflect1 reflect2">
+		<joint name="rocker_bogie_front_${prefix}_joint" type="fixed">
+			<parent link="battery_link"/>
+			<child link="rocker_bogie_front_${prefix}_link"/>
+			<origin xyz="0 ${reflect1*0.105} 0" rpy="0 0 0"/>
+		</joint>
+	
+		<link name="rocker_bogie_front_${prefix}_link">
+			<visual>
+				<geometry>
+					<mesh filename="package://infant_description/meshes/rocker_bogie_parts_front_${prefix}.dae"/>
+				</geometry>
+				<origin xyz="0 ${reflect2*(0.020)} 0" rpy="${pi} 0 0"/>
+			</visual>
+			<collision>
+				<geometry>
+					<box size="${rocker_bogie_front_depth} ${rocker_bogie_front_width} ${rocker_bogie_front_height}"/>
+				</geometry>
+				<origin xyz="${(rocker_bogie_front_depth/2)-0.080} ${reflect1*(rocker_bogie_front_width/2)} 0.035" rpy="0 0 0"/>
+			</collision>
+			<xacro:default_box_inertial 
+				mass="5" 
+				depth="${rocker_bogie_front_depth}"
+				width="${rocker_bogie_front_width}"
+				height="${rocker_bogie_front_height}"
+				x_offset="${(rocker_bogie_front_depth/2)-0.080}"
+				y_offset="${reflect1*(rocker_bogie_front_width/2)}"
+				z_offset="0.035"/>
+
+		</link>
+	</xacro:macro>
+
+	<xacro:rocker_bogie_front prefix="left" reflect1="1" reflect2="1"/>
+	<xacro:rocker_bogie_front prefix="right" reflect1="-1" reflect2="0"/>
+
+	<xacro:macro name="caster_small" params="prefix reflect">
+		<joint name="caster_small_${prefix}_joint" type="fixed">
+			<parent link="rocker_bogie_back_${prefix}_link"/>
+			<child link="caster_small_${prefix}_link"/>
+			<origin xyz="-0.360 ${reflect*0.075} 0.070" rpy="0 0 0"/>
+			<axis xyz="0 0 1"/>
+		</joint>
+	
+		<link name="caster_small_${prefix}_link">
+			<visual>
+				<geometry>
+					<mesh filename="package://infant_description/meshes/caster_small.dae"/>
+				</geometry>
+				<origin xyz="0 0 0" rpy="-${pi/2} 0 ${pi/2}"/>
+			</visual>
+			<collision>
+				<geometry>
+					<cylinder length="${caster_small_length}" radius="${caster_small_radius}"/>
+				</geometry>
+				<origin xyz="0 0 -${caster_small_length/2}" rpy="0 0 0"/>
+			</collision>
+			<xacro:default_cylinder_inertial 
+				mass="0.5" length="${caster_small_length}" radius="${caster_small_radius}"
+				x_offset="0.0" y_offset="0.0" z_offset="-${caster_small_length/2}"/>
+		</link>
+	</xacro:macro>
+	
+	<xacro:caster_small prefix="left" reflect="1"/>
+	<xacro:caster_small prefix="right" reflect="-1"/>
+
+	<xacro:macro name="caster_large" params="prefix reflect">
+		<joint name="caster_large_${prefix}_joint" type="fixed">
+			<parent link="rocker_bogie_front_${prefix}_link"/>
+			<child link="caster_large_${prefix}_link"/>
+			<origin xyz="0.330 ${reflect*0.095} 0.070" rpy="0 0 0"/>
+			<axis xyz="0 0 1"/>
+		</joint>
+	
+		<link name="caster_large_${prefix}_link">
+			<visual>
+				<geometry>
+					<mesh filename="package://infant_description/meshes/caster_large.dae"/>
+				</geometry>
+				<origin xyz="0 0 0" rpy="-${pi/2} 0 ${pi/2}"/>
+			</visual>
+			<collision>
+				<geometry>
+					<cylinder length="${caster_large_length}" radius="${caster_large_radius}"/>
+				</geometry>
+				<origin xyz="0 0 -${caster_large_length/2}" rpy="0 0 0"/>
+			</collision>
+			<xacro:default_cylinder_inertial 
+				mass="0.5" length="${caster_large_length}" radius="${caster_large_radius}"
+				x_offset="0.0" y_offset="0.0" z_offset="-${caster_large_length/2}"/>
+		</link>
+	</xacro:macro>
+
+	<xacro:caster_large prefix="left" reflect="1"/>
+	<xacro:caster_large prefix="right" reflect="-1"/>
+	
+	<xacro:macro name="wheel" params="prefix reflect">
+		<joint name="wheel_${prefix}_joint" type="continuous">
+			<parent link="rocker_bogie_front_${prefix}_link"/>
+			<child link="wheel_${prefix}_link"/>
+			<origin xyz="0 ${reflect*0.145} 0" rpy="0 0 0"/>
+			<axis xyz="0 1 0"/>
+		</joint>
+	
+		<link name="wheel_${prefix}_link">
+			<visual>
+				<geometry>
+					<cylinder length="0.100" radius="0.14240"/>
+				</geometry>
+				<origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+				<material name="ivory"/>
+			</visual>
+			<collision>
+				<geometry>
+					<cylinder length="0.100" radius="0.14240"/>
+				</geometry>
+				<origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+			</collision>
+			<xacro:default_wheel_inertial 
+				mass="4" length="0.100" radius="0.142240" 
+				x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+		</link>
+	</xacro:macro>
+
+	<xacro:wheel prefix="left" reflect="1"/>
+	<xacro:wheel prefix="right" reflect="-1"/>
+
+	<xacro:macro name="wheel_small" params="prefix">
+		<joint name="wheel_small_${prefix}_joint" type="fixed">
+			<parent link="caster_small_${prefix}_link"/>
+			<child link="wheel_small_${prefix}_link"/>
+			<origin xyz="0 0 -0.145" rpy="0 0 0"/>
+			<axis xyz="0 1 0"/>
+		</joint>
+	
+		<link name="wheel_small_${prefix}_link">
+			<visual>
+				<geometry>
+					<cylinder length="0.030" radius="0.070"/>
+				</geometry>
+				<origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+				<material name="black"/>
+			</visual>
+			<collision>
+				<geometry>
+					<cylinder length="0.030" radius="0.070"/>
+				</geometry>
+				<origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+			</collision>
+			<xacro:default_wheel_inertial 
+				mass="1.5" length="0.030" radius="0.070"
+				x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+		</link>
+	</xacro:macro>
+
+	<xacro:wheel_small prefix="left"/>
+	<xacro:wheel_small prefix="right"/>
+
+	<xacro:macro name="wheel_large" params="prefix">
+		<joint name="wheel_large_${prefix}_joint" type="fixed">
+			<parent link="caster_large_${prefix}_link"/>
+			<child link="wheel_large_${prefix}_link"/>
+			<origin xyz="0 0 -0.130" pry="0 0 0"/>
+			<axis xyz="0 1 0"/>
+		</joint>
+
+		<link name="wheel_large_${prefix}_link">
+			<visual>
+				<geometry>
+					<cylinder length="0.040" radius="0.080"/>
+				</geometry>
+				<origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+				<material name="black"/>
+			</visual>
+			<collision>
+				<geometry>
+					<cylinder length="0.040" radius="0.080"/>
+				</geometry>
+				<origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+			</collision>
+			<xacro:default_wheel_inertial 
+				mass="1.5" length="0.040" radius="0.080"
+				x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+		</link>
+	</xacro:macro>
+
+	<xacro:wheel_large prefix="left"/>
+	<xacro:wheel_large prefix="right"/>
+
+
+	<!-- box -->
+	<joint name="box_joint" type="fixed">
+		<parent link="battery_link"/>
+		<child link="box_link"/>
+		<origin xyz="0 0 0.565" rpy="0 0 0"/>
+	</joint>
+
+	<link name="box_link">
+		<visual>
+			<geometry>
+				<box size="0.400 0.300 0.500"/>
+			</geometry>
+			<origin xyz="-0.005 0 0" rpy="0 0 0"/>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.400 0.300 0.500"/>
+			</geometry>
+			<origin xyz="-0.005 0 0" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_box_inertial 
+			mass="30" depth="0.400" width="0.300" height="0.500"
+			x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+	</link>
+
+	<joint name="mast_joint" type="fixed">
+		<parent link="box_link"/>
+		<child link="mast_link"/>
+		<origin xyz="0 0 0.375" rpy="0 0 0"/>
+	</joint>
+
+	<link name="mast_link">
+		<visual>
+			<geometry>
+				<box size="0.100 0.100 0.250"/>
+			</geometry>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<material name="lightgray"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.100 0.100 0.250"/>
+			</geometry>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_box_inertial 
+			mass="10" depth="0.100" width="0.100" height="0.250"
+			x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+	</link>
+
+	<joint name="table_joint" type="fixed">
+		<parent link="mast_link"/>
+		<child link="table_link"/>
+		<origin xyz="0 0 0.1275" rpy="0 0 0"/>
+	</joint>
+
+	<link name="table_link">
+		<visual>
+			<geometry>
+				<box size="0.200 0.200 0.005"/>
+			</geometry>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<material name="ivory"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.200 0.200 0.005"/>
+			</geometry>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_box_inertial 
+			mass="1" depth="0.200" width="0.200" height="0.005"
+			x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+	</link>
+
+	<!-- velodyne -->
+	<joint name="velodyne_base_joint" type="fixed">
+		<parent link="table_link"/>
+		<child link="velodyne_base_link"/>
+		<origin xyz="0 0 0.0025" rpy="0 0 0"/>
+	</joint>
+
+	<link name="velodyne_base_link">
+		<visual>
+			<geometry>
+				<cylinder length="${velodyne_base_length}" radius="${velodyne_diameter/2}"/>
+			</geometry>
+			<origin xyz="0 0 ${velodyne_base_length/2}" rpy="0 0 0"/>
+			<material name="darkgray"/>
+		</visual>
+		<collision>
+			<geometry>
+				<cylinder length="${velodyne_base_length}" radius="${velodyne_diameter/2}"/>
+			</geometry>
+			<origin xyz="0 0 ${velodyne_base_length/2}" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_cylinder_inertial 
+			mass="1.0" length="${velodyne_base_length}" radius="${velodyne_diameter/2}"
+			x_offset="0.0" y_offset="0.0" z_offset="${velodyne_base_length/2}"/>
+	</link>
+
+	<joint name="velodyne_top_joint" type="continuous">
+		<parent link="velodyne_base_link"/>
+		<child link="velodyne_top_link"/>
+		<origin xyz="0 0 ${velodyne_base_length}" rpy="0 0 0"/>
+		<axis xyz="0 0 1"/>
+	</joint>
+
+	<link name="velodyne_top_link">
+		<visual>
+			<geometry>
+				<mesh filename="package://infant_description/meshes/velodyne_top.dae"/>
+			</geometry>
+			<origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+		</visual>
+		<collision>
+			<geometry>
+				<cylinder length="${velodyne_top_length}" radius="${velodyne_diameter/2}"/>
+			</geometry>
+			<origin xyz="0 0 ${velodyne_top_length/2}" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_cylinder_inertial 
+			mass="0.0001" length="${velodyne_top_length}" radius="${velodyne_diameter/2}"
+			x_offset="0.0" y_offset="0.0" z_offset="${velodyne_top_length/2}"/>
+	</link>
+
+	<joint name="velodyne_laser_joint" type="fixed">
+		<parent link="velodyne_top_link"/>
+		<child link="velodyne_laser_link"/>
+		<origin xyz="0 0 ${0.0069204+(velodyne_laser_height/2)}" rpy="0 0 0"/>
+	</joint>
+
+	<link name="velodyne_laser_link">
+		<visual>
+			<geometry>
+				<box size="${velodyne_laser_depth} ${velodyne_laser_width} ${velodyne_laser_height}"/>
+			</geometry>
+			<origin xyz="${velodyne_laser_depth/2} 0 0" rpy="0 0 0"/>
+			<material name="lase_black"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="${velodyne_laser_depth} ${velodyne_laser_width} ${velodyne_laser_height}"/>
+			</geometry>
+			<origin xyz="${velodyne_laser_depth/2} 0 0" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_box_inertial
+			mass="0.0001" 
+			depth="${velodyne_laser_depth}" 
+			width="${velodyne_laser_width}" 
+			height="${velodyne_laser_height}"
+			x_offset="${velodyne_laser_depth/2}"
+			y_offset="0.0"
+			z_offset="0.0"/>
+	</link>
+
+	<!--joint name="velodyne_laser2_joint" type="fixed">
+		<parent link="velodyne_top_link"/>
+		<child link="velodyne_laser2_link"/>
+		<origin xyz="0 0 ${0.0069204+(velodyne_laser_height/2)}" rpy="-${pi/2} 0 ${pi/2}"/>
+	</joint>
+
+	<link name="velodyne_laser2_link"/>
+
+	<joint name="velodyne_laser3_joint" type="fixed">
+		<parent link="velodyne_top_link"/>
+		<child link="velodyne_laser3_link"/>
+		<origin xyz="0 0 ${0.0069204+(velodyne_laser_height/2)}" rpy="-${pi/2} 0 ${pi}"/>
+	</joint>
+
+	<link name="velodyne_laser3_link"/>
+	
+	<joint name="velodyne_laser4_joint" type="fixed">
+		<parent link="velodyne_top_link"/>
+		<child link="velodyne_laser4_link"/>
+		<origin xyz="0 0 ${0.0069204+(velodyne_laser_height/2)}" rpy="-${pi/2} 0 -${pi/2}"/>
+	</joint>
+
+	<link name="velodyne_laser4_link"/>
+
+	<joint name="velodyne_laser5_joint" type="fixed">
+		<parent link="velodyne_top_link"/>
+		<child link="velodyne_laser5_link"/>
+		<origin xyz="0 0 ${0.0069204+(velodyne_laser_height/2)}" rpy="-${pi/2} 0 ${pi/4}"/>
+	</joint>
+
+	<link name="velodyne_laser5_link"/>
+
+	<joint name="velodyne_laser6_joint" type="fixed">
+		<parent link="velodyne_top_link"/>
+		<child link="velodyne_laser6_link"/>
+		<origin xyz="0 0 ${0.0069204+(velodyne_laser_height/2)}" rpy="-${pi/2} 0 ${3*pi/4}"/>
+	</joint>
+
+	<link name="velodyne_laser6_link"/>
+
+	<joint name="velodyne_laser7_joint" type="fixed">
+		<parent link="velodyne_top_link"/>
+		<child link="velodyne_laser7_link"/>
+		<origin xyz="0 0 ${0.0069204+(velodyne_laser_height/2)}" rpy="-${pi/2} 0 -${pi/4}"/>
+	</joint>
+
+	<link name="velodyne_laser7_link"/>
+
+	<joint name="velodyne_laser8_joint" type="fixed">
+		<parent link="velodyne_top_link"/>
+		<child link="velodyne_laser8_link"/>
+		<origin xyz="0 0 ${0.0069204+(velodyne_laser_height/2)}" rpy="-${pi/2} 0 -${3*pi/4}"/>
+	</joint>
+
+	<link name="velodyne_laser8_link"/-->
+
+	<!-- arm base -->
+	<joint name="box_to_forty_five1_joint" type="fixed">
+		<parent link="box_link"/>
+		<child link="forty_five_link1"/>
+		<origin xyz="${0.200-0.045} ${-0.150-0.0045} ${0.250}" rpy="0 0 0"/>
+	</joint>
+
+	<link name="forty_five_link1">
+		<visual>
+			<geometry>
+				<mesh filename="package://infant_description/meshes/forty_five_joint.dae"/>
+			</geometry>
+			<origin rpy="-${pi/2} 0 0" xyz="0 0 0"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.001 0.001 0.001"/>
+			</geometry>
+			<origin rpy="-${pi/2} 0 0" xyz="0 -0.024 -0.010"/>
+		</collision>
+		<xacro:default_inertial 
+			mass="0.010" depth="0.001" width="0.001" height="0.001"
+			x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+	</link>
+		
+	<joint name="box_to_forty_five2_joint" type="fixed">
+		<parent link="box_link"/>
+		<child link="forty_five_link2"/>
+		<origin xyz="${0.200-0.045} ${-0.150-0.0045} ${-0.250+0.020}" rpy="0 0 0"/>
+	</joint>
+
+	<link name="forty_five_link2">
+		<visual>
+			<geometry>
+				<mesh filename="package://infant_description/meshes/forty_five_joint.dae"/>
+			</geometry>
+			<origin rpy="-${pi/2} 0 0" xyz="0 0 0"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.001 0.001 0.001"/>
+			</geometry>
+			<origin rpy="0 0 0" xyz="0 -0 0"/>
+		</collision>
+		<xacro:default_inertial 
+			mass="0.010" depth="0.001" width="0.001" height="0.001"
+			x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+	</link>
+
+	<joint name="box_to_forty_five3_joint" type="fixed">
+		<parent link="box_link"/>
+		<child link="forty_five_link3"/>
+		<origin xyz="${0.200-0.0005} ${-0.150+0.040} ${0.250-0.020}" rpy="0 0 0"/>
+	</joint>
+
+	<link name="forty_five_link3">
+		<visual>
+			<geometry>
+				<mesh filename="package://infant_description/meshes/forty_five_joint.dae"/>
+			</geometry>
+			<origin rpy="${pi/2} 0 -${pi/2}" xyz="0 0 0"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.001 0.001 0.001"/>
+			</geometry>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+		</collision>
+		<xacro:default_inertial 
+			mass="0.010" depth="0.001" width="0.001" height="0.001"
+			x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+	</link>
+	
+	<joint name="box_to_forty_five4_joint" type="fixed">
+		<parent link="box_link"/>
+		<child link="forty_five_link4"/>
+		<origin xyz="${0.200-0.0005} ${-0.150+0.04} ${-0.250}" rpy="0 0 0"/>
+	</joint>
+
+	<link name="forty_five_link4">
+		<visual>
+			<geometry>
+				<mesh filename="package://infant_description/meshes/forty_five_joint.dae"/>
+			</geometry>
+			<origin rpy="${pi/2} 0 -${pi/2}" xyz="0 0 0"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.001 0.001 0.001"/>
+			</geometry>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+		</collision>
+		<xacro:default_inertial 
+			mass="0.010" depth="0.000" width="0.001" height="0.001"
+			x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+	</link>
+	
+	<joint name="box_to_forty_five5_joint" type="fixed">
+		<parent link="box_link"/>
+		<child link="forty_five_link5"/>
+		<origin xyz="${0.200-0.045} ${0.150+0.0045} ${0.250-0.020}" rpy="0 0 0"/>
+	</joint>
+
+	<link name="forty_five_link5">
+		<visual>
+			<geometry>
+				<mesh filename="package://infant_description/meshes/forty_five_joint.dae"/>
+			</geometry>
+			<origin rpy="${pi/2} 0 0" xyz="0 0 0"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.001 0.001 0.001"/>
+			</geometry>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+		</collision>
+		<xacro:default_inertial 
+			mass="0.010" depth="0.001" width="0.001" height="0.001"
+			x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+	</link>
+		
+	<joint name="box_to_forty_five6_joint" type="fixed">
+		<parent link="box_link"/>
+		<child link="forty_five_link6"/>
+		<origin xyz="${0.200-0.045} ${0.150+0.0045} ${-0.250}" rpy="0 0 0"/>
+	</joint>
+
+	<link name="forty_five_link6">
+		<visual>
+			<geometry>
+				<mesh filename="package://infant_description/meshes/forty_five_joint.dae"/>
+			</geometry>
+			<origin rpy="${pi/2} 0 0" xyz="0 0 0"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.001 0.001 0.001"/>
+			</geometry>
+			<origin rpy="0 0 0" xyz="0 -0 0"/>
+		</collision>
+		<xacro:default_inertial 
+			mass="0.010" depth="0.001" width="0.001" height="0.001"
+			x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+	</link>
+
+	<joint name="box_to_forty_five7_joint" type="fixed">
+		<parent link="box_link"/>
+		<child link="forty_five_link7"/>
+		<origin xyz="${0.200-0.0005} ${0.150-0.040} ${0.250}" rpy="0 0 0"/>
+	</joint>
+
+	<link name="forty_five_link7">
+		<visual>
+			<geometry>
+				<mesh filename="package://infant_description/meshes/forty_five_joint.dae"/>
+			</geometry>
+			<origin rpy="${pi/2} ${pi} -${pi/2}" xyz="0 0 0"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.001 0.001 0.001"/>
+			</geometry>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+		</collision>
+		<xacro:default_inertial 
+			mass="0.010" depth="0.001" width="0.001" height="0.001"
+			x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+	</link>
+	
+	<joint name="box_to_forty_five8_joint" type="fixed">
+		<parent link="box_link"/>
+		<child link="forty_five_link8"/>
+		<origin xyz="${0.200-0.0005} ${0.150-0.04} ${-0.250+0.020}" rpy="0 0 0"/>
+	</joint>
+
+	<link name="forty_five_link8">
+		<visual>
+			<geometry>
+				<mesh filename="package://infant_description/meshes/forty_five_joint.dae"/>
+			</geometry>
+			<origin rpy="${pi/2} ${pi} -${pi/2}" xyz="0 0 0"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.001 0.001 0.001"/>
+			</geometry>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+		</collision>
+		<xacro:default_inertial 
+			mass="0.010" depth="0.000" width="0.001" height="0.001"
+			x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+	</link>
+
+	<joint name="box_link_to_arm_board_left_joint" type="fixed">
+		<parent link="box_link"/>
+		<child link="arm_board_left_link"/>
+		<origin xyz="0.195 0.150 0" rpy="0 0 ${pi/4}"/>
+	</joint>
+
+	<link name="arm_board_left_link">
+		<visual>
+			<origin xyz="0.0025 0 0" rpy="0 0 0" />
+			<geometry>
+				<box size="0.005 0.160 0.500"/>
+			</geometry>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<origin xyz="0.0025 0 0" rpy="0 0 0" />
+			<geometry>
+				<box size="0.005 0.160 0.500"/>
+			</geometry>
+		</collision>
+		<xacro:default_box_inertial 
+			mass="0.05" depth="0.005" width="0.160" height="0.500"
+			x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+	</link>
+			
+	<joint name="box_link_to_arm_board_right_joint" type="fixed">
+		<parent link="box_link"/>
+		<child link="arm_board_right_link"/>
+		<origin xyz="0.195 -0.150 0" rpy="0 0 -${pi/4}"/>
+	</joint>
+
+	<link name="arm_board_right_link">
+		<visual>
+			<origin xyz="0.0025 0 0" rpy="0 0 0" />
+			<geometry>
+				<box size="0.005 0.160 0.500"/>
+			</geometry>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<origin xyz="0.0025 0 0" rpy="0 0 0" />
+			<geometry>
+				<box size="0.005 0.160 0.500"/>
+			</geometry>
+		</collision>
+		<xacro:default_box_inertial 
+			mass="0.05" depth="0.005" width="0.160" height="0.500"
+			x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+	</link>
+
+
+	<!-- kinect -->
+	<joint name="kinect_base_joint" type="fixed">
+		<parent link="mast_link"/>
+		<child link="kinect_base_link"/>
+		<origin rpy="0 0 0" xyz="${0.050+0.035} 0 0"/>
+	</joint>
+	
+	<link name="kinect_base_link">
+		<visual>
+			<geometry>
+				<box size="0.070 0.080 0.002"/>
+			</geometry>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.070 0.080 0.002"/>
+			</geometry>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+		</collision>
+		<xacro:default_box_inertial 
+			mass="0.05" depth="0.070" width="0.080" height="0.002"
+			x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+	</link>
+	
+	<joint name="kinect_link_joint" type="fixed">
+		<parent link="kinect_base_link"/>
+		<child link="kinect_link"/>
+		<origin rpy="0 0 0" xyz="0 0 0.052"/>
+	</joint>
+	
+	<link name="kinect_link"/>
+	
+	<joint name="camera_rgb_joint" type="fixed">
+		<parent link="kinect_link"/>
+		<child link="camera_rgb_frame"/>
+		<origin rpy="${cam_or} ${cam_op} ${cam_oy}" xyz="${cam_px} ${kinect_cam_py} ${cam_pz}"/>
+	</joint>
+	
+	<link name="camera_rgb_frame"/>
+	
+	<joint name="camera_rgb_optical_joint" type="fixed">
+		<parent link="camera_rgb_frame"/>
+		<child link="camera_rgb_optical_frame"/>
+		<origin rpy="${-pi/2} 0 ${-pi/2}" xyz="0 0 0"/>
+	</joint>
+  
+	<link name="camera_rgb_optical_frame"/>
+  
+	<joint name="camera_joint" type="fixed">
+		<parent link="camera_rgb_frame"/>
+		<child link="camera_link"/>
+		<origin rpy="0 0 0" xyz="0.0 ${-kinect_cam_py} -0.016"/>
+	</joint>
+  
+	<link name="camera_link">
+		<visual>
+			<geometry>
+				<mesh filename="package://infant_description/meshes/kinect.dae"/>
+			</geometry>
+			<origin rpy="0 0 ${pi/2}" xyz="0 0 0"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.072 0.277 0.073"/>
+			</geometry>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+		</collision>
+		<xacro:default_inertial 
+			mass="0.564" depth="0.072" width="0.277" height="0.073"
+			x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+	</link>
+	
+	<joint name="camera_depth_joint" type="fixed">
+		<parent link="camera_rgb_frame"/>
+		<child link="camera_depth_frame"/>
+		<origin rpy="0 0 0" xyz="0 ${2 * -kinect_cam_py} 0"/>
+	</joint>
+	
+	<link name="camera_depth_frame"/>
+	
+	<joint name="camera_depth_optical_joint" type="fixed">
+		<parent link="camera_depth_frame"/>
+		<child link="camera_depth_optical_frame"/>
+		<origin rpy="${-pi/2} 0 ${-pi/2}" xyz="0 0 0"/>
+	</joint>
+	
+	<link name="camera_depth_optical_frame"/>
+  
+
+	<!-- Dynamixel Arm -->
+
+	<joint name="arm_base_joint" type="fixed">
+		<parent link="arm_board_right_link"/>
+		<child link="arm_base_link"/>
+		<origin xyz="0.005 0 0.142" rpy="0 -${pi/2} ${pi}"/>
+	</joint>
+
+	<link name="arm_base_link">
+		<visual>
+			<geometry>
+				<mesh filename="package://infant_description/meshes/Untitled.dae" />
+			</geometry>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.100 0.100 0.064"/>
+			</geometry>
+			<origin xyz="0 0 ${0.064/2}" rpy="0 0 0"/>
+		</collision>
+
+		<xacro:default_cylinder_inertial
+			mass="0.346" length="0.040" radius="0.040"
+			x_offset="0.0" y_offset="0.0" z_offset="-${0.040/2}"/>
+		<!--inertial>
+			<origin xyz="0.0075 0.0000 0.0327" rpy="0 0 0"/>
+			<mass value="0.346"/>
+			<inertia 
+				ixx="0.000324" ixy="0.0" ixz="0.0" 
+				iyy="0.000383" iyz="0.0" 
+				izz="0.000381"/>
+		</inertial-->
+	</link>
+
+	<joint name="joint1" type="revolute">
+		<parent link="arm_base_link"/>
+		<child link="link1"/>
+		<origin xyz="0 0 ${0.064}" rpy="0 0 0"/>
+		<axis xyz="0 0 1"/>
+		<limit effort="6.0" lower="-${175/180*pi}" upper="${175/180*pi}" velocity="${11/6*pi}"/>
+	</joint>
+
+	<link name="link1">
+		<visual>
+			<geometry>
+				<mesh filename="package://infant_description/meshes/Untitled4.dae"/>
+			</geometry>
+			<origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.035 0.070 0.063"/>
+			</geometry>
+			<origin xyz="0 0 ${0.063/2}" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_box_inertial
+			mass="0.506" depth="0.035" width="0.070" height="0.050"
+			x_offset="0.31" y_offset="0.0" z_offset="${0.050/2}"/>
+		<!--inertial>
+			<origin xyz="0.0002 0.0367 0.0000" rpy="${pi/2} 0 0"/>
+			<mass value="0.506"/>
+			<inertia 
+				ixx="0.000733" ixy="0.0" ixz="0.0" 
+				iyy="0.000495" iyz="0.0" 
+				izz="0.000424"/>
+		</inertial-->
+	</link>
+
+	<joint name="joint2" type="revolute">
+		<parent link="link1"/>
+		<child link="link2"/>
+		<origin xyz="0 0 ${0.063}" rpy="0 0 0"/>
+		<axis xyz="0 -1 0"/>
+		<limit effort="${2*6.0}" lower="-${95/180*pi}" upper="${95/180*pi}" velocity="${11/6*pi}"/>
+	</joint>
+
+	<link name="link2">
+		<visual>
+			<geometry>
+				<mesh filename="package://infant_description/meshes/Untitled5.dae"/>
+			</geometry>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.035 0.035 0.250"/>
+			</geometry>
+			<origin xyz="0 0 ${0.250/2}" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_box_inertial
+			mass="0.452" depth="0.035" width="0.035" height="0.150"
+			x_offset="0.0" y_offset="0.0" z_offset="${0.150}"/>
+		<!--inertial>
+			<origin xyz="-0.0083 0.0001 0.1509" rpy="0 0 0"/>
+			<mass value="0.452"/>
+			<inertia 
+				ixx="0.003839" ixy="0.0" ixz="0.000159" 
+				iyy="0.000378" iyz="0.0" 
+				izz="0.000282"/>
+		</inertial-->
+	</link>
+
+	<joint name="joint3" type="revolute">
+		<parent link="link2"/>
+		<child link="link3"/>
+		<origin xyz="0 0 0.250" rpy="0 0 0"/>
+		<axis xyz="0 1 0"/>
+		<limit effort="6.0" lower="-${10/180*pi}" upper="${150/180*pi}" velocity="${11/6*pi}"/>
+	</joint>
+
+	<link name="link3">
+		<visual>
+			<geometry>
+				<mesh filename="package://infant_description/meshes/Untitled8.dae"/>
+			</geometry>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.035 0.035 0.100"/>
+			</geometry>
+			<origin xyz="0 0 ${0.100/2}" rpy="0 0 0"/>
+		</collision>
+
+		<xacro:default_box_inertial 
+			mass="0.232" depth="0.035" width="0.035" height="0.060"
+			x_offset="0.0" y_offset="0.0" z_offset="${0.060}"/>
+		<!--inertial>
+			<origin xyz="-0.0193 0.0003 0.0574" rpy="0 0 0"/>
+			<mass value="0.232"/>
+			<inertia 
+				ixx="0.000230" ixy="0.0" ixz="-0.000164" 
+				iyy="0.000231" iyz="0.0" 
+				izz="0.000120"/>
+		</inertial-->
+	</link>
+		
+	<joint name="joint4" type="revolute">
+		<parent link="link3"/>
+		<child link="link4"/>
+		<origin xyz="0 0 0.100" rpy="0 0 0"/>
+		<axis xyz="0 0 1"/>
+		<limit effort="6.0" lower="-${175/180*pi}" upper="${175/180*pi}" velocity="${11/6*pi}"/>
+	</joint>
+
+	<link name="link4">
+		<visual>
+			<geometry>
+				<mesh filename="package://infant_description/meshes/Untitled6.dae"/>
+			</geometry>
+			<origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.035 0.035 0.100"/>
+			</geometry>
+			<origin xyz="0 0 ${0.100/2}" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_box_inertial
+			mass="0.211" depth="0.035" width="0.035" height="0.060"
+			x_offset="0.0" y_offset="0.0" z_offset="${0.0975/2}"/>
+		<!--inertial>
+			<origin xyz="0.0000 0.0589 0.0000" rpy="${pi/2} 0 0"/>
+			<mass value="0.211"/>
+			<inertia 
+				ixx="0.000307" ixy="0.0" ixz="-0.000164" 
+				iyy="0.000061" iyz="0.0" 
+				izz="0.000299"/>
+		</inertial-->
+	</link>
+
+	<joint name="joint5" type="revolute">
+		<parent link="link4"/>
+		<child link="link5"/>
+		<origin xyz="0 0 0.100" rpy="0 0 0"/>
+		<axis xyz="0 -1 0"/>
+		<limit effort="6.0" lower="-${95/180*pi}" upper="${95/180*pi}" velocity="${11/6*pi}"/>
+	</joint>
+
+	<link name="link5">
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<mesh filename="package://infant_description/meshes/Untitled7.dae"/>
+			</geometry>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<origin xyz="0 0 ${0.046/2}" rpy="0 0 0" />
+			<geometry>
+				<box size="0.024 0.0475 0.046" />
+			</geometry>
+		</collision>
+		<xacro:default_box_inertial
+			mass="0.118" depth="0.024" width="0.0475" height="0.061"
+			x_offset="0.0" y_offset="0.0" z_offset="${0.061/2}"/>
+		<!--inertial>
+			<origin xyz="-0.0013 -0.0012 0.0372" rpy="0 0 0"/>
+			<mass value="0.118"/>
+			<inertia 
+				ixx="0.000063" ixy="0.0" ixz="0.0" 
+				iyy="0.000050" iyz="0.0" 
+				izz="0.000045"/>
+		</inertial-->
+	</link>
+
+	<joint name="joint6" type="revolute">
+		<parent link="link5"/>
+		<child link="link6"/>
+		<origin xyz="0 -0.0133 0.046" rpy="0 0 0"/>
+		<axis xyz="-1 0 0"/>
+		<limit effort="6.0" lower="-${40/180*pi}" upper="${20/180*pi}" velocity="${11/6*pi}"/>
+	</joint>
+
+	<link name="link6">
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 -${pi/2}" />
+			<geometry>
+				<mesh filename="package://infant_description/meshes/Untitled2.dae"/>
+			</geometry>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 ${pi/2}" />
+			<geometry>
+				<cylinder radius="0.012" length="0.0475" />
+			</geometry>
+		</collision>
+		<xacro:default_box_inertial 
+			mass="0.031" depth="0.0475" width="0.026" height="0.024"
+			x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+		<!--inertial>
+			<origin xyz="0.0106 -0.0020 0.0249" rpy="0 0 0"/>
+			<mass value="0.031"/>
+			<inertia 
+				ixx="0.000033" ixy="0.0" ixz="0.0" 
+				iyy="0.000027" iyz="0.0" 
+				izz="0.000012"/>
+		</inertial-->
+	</link>
+
+	<joint name="joint7" type="revolute">
+		<parent link="link5"/>
+		<child link="link7"/>
+		<origin xyz="0 0.0133 0.046" rpy="0 0 0"/>
+		<axis xyz="-1 0 0"/>
+		<limit effort="6.0" lower="-${40/180*pi}" upper="${20/180*pi}" velocity="${11/6*pi}"/>
+	</joint>
+
+	<link name="link7">
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 -${pi/2}" />
+			<geometry>
+				<mesh filename="package://infant_description/meshes/Untitled3.dae"/>
+			</geometry>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 -${pi/2}" />
+			<geometry>
+				<cylinder radius="0.012" length="0.0475" />
+			</geometry>
+		</collision>
+		<xacro:default_box_inertial 
+			mass="0.027" depth="0.0475" width="0.026" height="0.024"
+			x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+		<!--inertial>
+			<origin xyz="-0.0119 -0.0036 0.0283" rpy="0 0 0"/>
+			<mass value="0.027"/>
+			<inertia 
+				ixx="0.000029" ixy="0.0" ixz="0.0" 
+				iyy="0.000024" iyz="0.0" 
+				izz="0.000010"/>
+		</inertial-->
+	</link>
+
+	<joint name="joint8" type="revolute">
+		<parent link="link5"/>
+		<child link="link8"/>
+		<origin xyz="0 0 0.130"/>
+		<axis xyz="0 1 0"/>
+		<limit effort="6.0" lower="-${40/180*pi}" upper="${35/180*pi}" velocity="${11/6*pi}"/>
+	</joint>
+
+	<link name="link8">
+		<visual>
+			<origin xyz="0 0 -0.025" rpy="0 0 0" />
+			<geometry>
+				<box size="0.06 0.06 0.06"/>
+			</geometry>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<box size="0.06 0.06 0.06"/>
+			</geometry>
+		</collision>
+		<xacro:default_box_inertial 
+			mass="0.01" depth="0.06" width="0.06" height="0.06"
+			x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+	</link>
+
+	<!-- transmission for Dynamixel Arm-->
+	<transmission name="tran1">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="joint1">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="motor1">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+	<transmission name="tran2">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="joint2">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="motor2">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+	<transmission name="tran3">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="joint3">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="motor3">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+	<transmission name="tran4">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="joint4">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="motor4">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+	<transmission name="tran5">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="joint5">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="motor5">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+	
+	<transmission name="tran6">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="joint6">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="motor6">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+	<transmission name="tran7">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="joint7">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="motor7">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+	<transmission name="tran8">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="joint8">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="motor8">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+	<!-- transmission -->
+	<transmission name="wheel_left_trans">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="wheel_left_joint">
+			<hardwareInterface>VelocityJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="wheel_left_motor">
+			<hardwareInterface>VelocityJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+
+	<transmission name="wheel_right_trans">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="wheel_right_joint">
+			<hardwareInterface>VelocityJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="wheel_right_motor">
+			<hardwareInterface>VelocityJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+	<transmission name="velodyne_top_trans">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="velodyne_top_joint">
+			<hardwareInterface>VelocityJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="velodyne_top_motor">
+			<hardwareInterface>VelocityJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+
+
+</robot>

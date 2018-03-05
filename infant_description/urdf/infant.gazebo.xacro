@@ -1,0 +1,448 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+	<gazebo reference="battery_link">
+		<material>Gazebo/FlatBlack</material>
+		<mu1>0.4</mu1>
+		<mu2>0.4</mu2>
+	</gazebo>
+
+	<xacro:macro name="rocker_bogie_gazebo" params="prefix suffix">
+		<gazebo reference="rocker_bogie_${prefix}_${suffix}_link">
+			<material>Gazebo/Road</material>
+			<mu1>0.4</mu1>
+			<mu2>0.4</mu2>
+		</gazebo>
+	</xacro:macro>
+
+	<xacro:rocker_bogie_gazebo prefix="back" suffix="left"/>
+	<xacro:rocker_bogie_gazebo prefix="back" suffix="right"/>
+	<xacro:rocker_bogie_gazebo prefix="front" suffix="left"/>
+	<xacro:rocker_bogie_gazebo prefix="front" suffix="right"/>
+
+	<xacro:macro name="caster_gazebo" params="prefix suffix">
+		<gazebo reference="caster_${prefix}_${suffix}_link">
+			<material>Gazebo/Grey</material>
+			<mu1>0.0</mu1>
+			<mu2>0.0</mu2>
+		</gazebo>
+	</xacro:macro>
+
+	<xacro:caster_gazebo prefix="small" suffix="left"/>
+	<xacro:caster_gazebo prefix="small" suffix="right"/>
+	<xacro:caster_gazebo prefix="large" suffix="left"/>
+	<xacro:caster_gazebo prefix="large" suffix="right"/>
+
+	<xacro:macro name="wheel_gazebo" params="prefix">
+		<gazebo reference="wheel_${prefix}_link">
+			<material>Gazebo/DarkGrey</material>
+			<mu1>1.0</mu1>
+			<mu2>1.0</mu2>
+		</gazebo>
+	</xacro:macro>
+
+	<xacro:wheel_gazebo prefix="left"/>
+	<xacro:wheel_gazebo prefix="right"/>
+
+	<xacro:macro name="wheel_sub_gazebo" params="prefix suffix">
+		<gazebo reference="wheel_${prefix}_${suffix}_link">
+			<material>Gazebo/Black</material>
+			<mu1>0.2</mu1>
+			<mu2>0.0</mu2>
+		</gazebo>
+	</xacro:macro>
+
+	<xacro:wheel_sub_gazebo prefix="small" suffix="left"/>
+	<xacro:wheel_sub_gazebo prefix="small" suffix="right"/>
+	<xacro:wheel_sub_gazebo prefix="large" suffix="left"/>
+	<xacro:wheel_sub_gazebo prefix="large" suffix="right"/>
+
+	<gazebo reference="box_link">
+		<material>Gazebo/White</material>
+	</gazebo>
+
+	<gazebo reference="mast_link">
+		<material>Gazebo/Grey</material>
+	</gazebo>
+
+	<gazebo reference="table_link">
+		<material>Gazebo/Grey</material>
+	</gazebo>
+
+	<gazebo reference="velodyne_base_link">
+		<material>Gazebo/Gold</material>
+		<mu1>0.0</mu1>
+		<mu2>0.0</mu2>
+	</gazebo>
+	
+	<gazebo reference="velodyne_top_link">
+		<material>Gazebo/Gold</material>
+		<mu1>0.0</mu1>
+		<mu2>0.0</mu2>
+	</gazebo>
+
+	<gazebo reference="velodyne_laser1_link">
+		<material>Gazebo/Black</material>
+	</gazebo>
+
+	<!-- imu -->
+	<gazebo>
+		<plugin name="imu_controller" filename="libgazebo_ros_imu.so">
+			<updateRate>100.0</updateRate>
+			<topicName>/infant/imu_data</topicName>
+			<frameName>base_link</frameName>
+			<bodyName>base_link</bodyName>
+			<frameId>base_link</frameId>
+			<topicName>/rinfant/imu_data</topicName>
+			<serviceName>/default_imu</serviceName>
+			<xyzOffset>0 0 0</xyzOffset>
+			<rpyOffset>0 0 0</rpyOffset> <!-- deprecated -->
+			<gaussianNoise>0</gaussianNoise>  <!-- deprecated -->
+			<accelDrift>0.5 0.5 0.5</accelDrift>
+			<accelGaussianNoise>0.35 0.35 0.3</accelGaussianNoise>
+			<rateDrift>0.0 0.0 0.0</rateDrift>
+			<rateGaussianNoise>0.00 0.00 0.00</rateGaussianNoise>
+			<headingDrift>0.0</headingDrift>
+			<headingGaussianNoise>0.00</headingGaussianNoise>
+		</plugin>
+	</gazebo>
+
+	<!-- velodyne -->
+	<!--gazebo reference="velodyne_laser_link">
+		<sensor type="ray" name="head_velodyne_sensor">
+			<visualize>false</visualize>
+			<update_rate>1</update_rate>
+			<ray>
+				<scan>
+					<horizontal>
+						<samples>1080</samples>
+						<resolution>1</resolution>
+						<min_angle>-3.1415</min_angle>
+						<max_angle>3.1415</max_angle>
+					</horizontal>
+					<vertical>
+						<samples>32</samples>
+						<resolution>1</resolution>
+						<min_angle>-0.186227</min_angle>
+						<max_angle>0.535292</max_angle>
+					</vertical>
+				</scan>
+				<range>
+					<min>0.10</min>
+					<max>70.0</max>
+					<resolution>0.01</resolution>
+				</range>
+				<noise>
+					<type>gaussian</type>
+					<mean>0.0</mean>
+					<stddev>0.01</stddev>
+				</noise>
+			</ray>
+			<plugin name="gazebo_ros_head_velodyne_controller" filename="libgazebo_ros_block_laser.so">
+				<alwaysOn>true</alwaysOn>
+				<updateRate>1</updateRate>
+				<topicName>/infant/velodyne_points</topicName>
+				<frameName>velodyne_laser_link</frameName>
+			</plugin>
+		</sensor>
+	</gazebo-->
+
+	<!-- hokuyo -->
+	<!--gazebo reference="velodyne_laser1_link">
+		<sensor type="ray" name="hokuyo_sensor">
+			<pose>0 0 0 0 0 0</pose>
+			<visualize>true</visualize>
+			<update_rate>500</update_rate>
+			<ray>
+				<scan>
+					<horizontal>
+						<samples>32</samples>
+						<resolution>1</resolution>
+						<min_angle>-0.186227</min_angle>
+						<max_angle>0.535292</max_angle>
+					</horizontal>
+				</scan>
+				<range>
+					<min>1.0</min>
+					<max>70.0</max>
+					<resolution>0.01</resolution>
+				</range>
+				<noise>
+					<type>gaussian</type>
+					<mean>0.0</mean>
+					<stddev>0.0</stddev>
+				</noise>
+			</ray>
+			<plugin name="gazebo_ros_hokuyo_controller" filename="libgazebo_ros_laser.so">
+				<topicName>/infant/laser/scan</topicName>
+				<frameName>velodyne_laser1_link</frameName>
+			</plugin>
+		</sensor>
+	</gazebo-->
+
+	<gazebo reference="velodyne_laser2_link">
+		<sensor type="ray" name="hokuyo_sensor_2">
+			<pose>0 0 0 0 0 0</pose>
+			<visualize>false</visualize>
+			<update_rate>500</update_rate>
+			<ray>
+				<scan>
+					<horizontal>
+						<samples>32</samples>
+						<resolution>1</resolution>
+						<min_angle>-0.186227</min_angle>
+						<max_angle>0.535292</max_angle>
+					</horizontal>
+				</scan>
+				<range>
+					<min>1.0</min>
+					<max>70.0</max>
+					<resolution>0.01</resolution>
+				</range>
+				<noise>
+					<type>gaussian</type>
+					<mean>0.0</mean>
+					<stddev>0.0</stddev>
+				</noise>
+			</ray>
+			<plugin name="gazebo_ros_hokuyo_controller" filename="libgazebo_ros_laser.so">
+				<topicName>/infant/laser/scan2</topicName>
+				<frameName>velodyne_laser2_link</frameName>
+			</plugin>
+		</sensor>
+	</gazebo>
+	
+	<gazebo reference="velodyne_laser3_link">
+		<sensor type="ray" name="hokuyo_sensor_3">
+			<pose>0 0 0 0 0 0</pose>
+			<visualize>false</visualize>
+			<update_rate>500</update_rate>
+			<ray>
+				<scan>
+					<horizontal>
+						<samples>32</samples>
+						<resolution>1</resolution>
+						<min_angle>-0.186227</min_angle>
+						<max_angle>0.535292</max_angle>
+					</horizontal>
+				</scan>
+				<range>
+					<min>1.0</min>
+					<max>70.0</max>
+					<resolution>0.01</resolution>
+				</range>
+				<noise>
+					<type>gaussian</type>
+					<mean>0.0</mean>
+					<stddev>0.0</stddev>
+				</noise>
+			</ray>
+			<plugin name="gazebo_ros_hokuyo_controller" filename="libgazebo_ros_laser.so">
+				<topicName>/infant/laser/scan3</topicName>
+				<frameName>velodyne_laser3_link</frameName>
+			</plugin>
+		</sensor>
+	</gazebo>
+	
+	<gazebo reference="velodyne_laser4_link">
+		<sensor type="ray" name="hokuyo_sensor_4">
+			<pose>0 0 0 0 0 0</pose>
+			<visualize>false</visualize>
+			<update_rate>500</update_rate>
+			<ray>
+				<scan>
+					<horizontal>
+						<samples>32</samples>
+						<resolution>1</resolution>
+						<min_angle>-0.186227</min_angle>
+						<max_angle>0.535292</max_angle>
+					</horizontal>
+				</scan>
+				<range>
+					<min>1.0</min>
+					<max>70.0</max>
+					<resolution>0.01</resolution>
+				</range>
+				<noise>
+					<type>gaussian</type>
+					<mean>0.0</mean>
+					<stddev>0.0</stddev>
+				</noise>
+			</ray>
+			<plugin name="gazebo_ros_hokuyo_controller" filename="libgazebo_ros_laser.so">
+				<topicName>/infant/laser/scan4</topicName>
+				<frameName>velodyne_laser4_link</frameName>
+			</plugin>
+		</sensor>
+	</gazebo>
+	
+	<gazebo reference="velodyne_laser5_link">
+		<sensor type="ray" name="hokuyo_sensor_5">
+			<pose>0 0 0 0 0 0</pose>
+			<visualize>false</visualize>
+			<update_rate>500</update_rate>
+			<ray>
+				<scan>
+					<horizontal>
+						<samples>32</samples>
+						<resolution>1</resolution>
+						<min_angle>-0.186227</min_angle>
+						<max_angle>0.535292</max_angle>
+					</horizontal>
+				</scan>
+				<range>
+					<min>1.0</min>
+					<max>70.0</max>
+					<resolution>0.01</resolution>
+				</range>
+				<noise>
+					<type>gaussian</type>
+					<mean>0.0</mean>
+					<stddev>0.0</stddev>
+				</noise>
+			</ray>
+			<plugin name="gazebo_ros_hokuyo_controller" filename="libgazebo_ros_laser.so">
+				<topicName>/infant/laser/scan5</topicName>
+				<frameName>velodyne_laser5_link</frameName>
+			</plugin>
+		</sensor>
+	</gazebo>
+	
+	<gazebo reference="velodyne_laser6_link">
+		<sensor type="ray" name="hokuyo_sensor_6">
+			<pose>0 0 0 0 0 0</pose>
+			<visualize>false</visualize>
+			<update_rate>500</update_rate>
+			<ray>
+				<scan>
+					<horizontal>
+						<samples>32</samples>
+						<resolution>1</resolution>
+						<min_angle>-0.186227</min_angle>
+						<max_angle>0.535292</max_angle>
+					</horizontal>
+				</scan>
+				<range>
+					<min>1.0</min>
+					<max>70.0</max>
+					<resolution>0.01</resolution>
+				</range>
+				<noise>
+					<type>gaussian</type>
+					<mean>0.0</mean>
+					<stddev>0.0</stddev>
+				</noise>
+			</ray>
+			<plugin name="gazebo_ros_hokuyo_controller" filename="libgazebo_ros_laser.so">
+				<topicName>/infant/laser/scan6</topicName>
+				<frameName>velodyne_laser6_link</frameName>
+			</plugin>
+		</sensor>
+	</gazebo>
+	
+	<gazebo reference="velodyne_laser7_link">
+		<sensor type="ray" name="hokuyo_sensor_7">
+			<pose>0 0 0 0 0 0</pose>
+			<visualize>false</visualize>
+			<update_rate>500</update_rate>
+			<ray>
+				<scan>
+					<horizontal>
+						<samples>32</samples>
+						<resolution>1</resolution>
+						<min_angle>-0.186227</min_angle>
+						<max_angle>0.535292</max_angle>
+					</horizontal>
+				</scan>
+				<range>
+					<min>1.0</min>
+					<max>70.0</max>
+					<resolution>0.01</resolution>
+				</range>
+				<noise>
+					<type>gaussian</type>
+					<mean>0.0</mean>
+					<stddev>0.0</stddev>
+				</noise>
+			</ray>
+			<plugin name="gazebo_ros_hokuyo_controller" filename="libgazebo_ros_laser.so">
+				<topicName>/infant/laser/scan7</topicName>
+				<frameName>velodyne_laser7_link</frameName>
+			</plugin>
+		</sensor>
+	</gazebo>
+
+	<gazebo reference="velodyne_laser8_link">
+		<sensor type="ray" name="hokuyo_sensor_8">
+			<pose>0 0 0 0 0 0</pose>
+			<visualize>false</visualize>
+			<update_rate>500</update_rate>
+			<ray>
+				<scan>
+					<horizontal>
+						<samples>32</samples>
+						<resolution>1</resolution>
+						<min_angle>-0.186227</min_angle>
+						<max_angle>0.535292</max_angle>
+					</horizontal>
+				</scan>
+				<range>
+					<min>1.0</min>
+					<max>70.0</max>
+					<resolution>0.01</resolution>
+				</range>
+				<noise>
+					<type>gaussian</type>
+					<mean>0.0</mean>
+					<stddev>0.0</stddev>
+				</noise>
+			</ray>
+			<plugin name="gazebo_ros_hokuyo_controller" filename="libgazebo_ros_laser.so">
+				<topicName>/infant/laser/scan8</topicName>
+				<frameName>velodyne_laser8_link</frameName>
+			</plugin>
+		</sensor>
+	</gazebo>
+	
+	<gazebo reference="velodyne_laser9_link">
+		<sensor type="ray" name="hokuyo_sensor_9">
+			<pose>0 0 0 0 0 0</pose>
+			<visualize>false</visualize>
+			<update_rate>500</update_rate>
+			<ray>
+				<scan>
+					<horizontal>
+						<samples>32</samples>
+						<resolution>1</resolution>
+						<min_angle>-0.186227</min_angle>
+						<max_angle>0.535292</max_angle>
+					</horizontal>
+				</scan>
+				<range>
+					<min>1.0</min>
+					<max>70.0</max>
+					<resolution>0.01</resolution>
+				</range>
+				<noise>
+					<type>gaussian</type>
+					<mean>0.0</mean>
+					<stddev>0.0</stddev>
+				</noise>
+			</ray>
+			<plugin name="gazebo_ros_hokuyo_controller" filename="libgazebo_ros_laser.so">
+				<topicName>/infant/laser/scan9</topicName>
+				<frameName>velodyne_laser9_link</frameName>
+			</plugin>
+		</sensor>
+	</gazebo>
+
+	<!-- ros_control plugin -->
+	<gazebo>
+		<plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+			<robotNamespace>/infant</robotNamespace>
+		</plugin>
+	</gazebo>
+
+
+
+</robot>

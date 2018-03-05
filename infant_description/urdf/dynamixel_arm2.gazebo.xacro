@@ -1,0 +1,40 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+	<gazebo>
+		<plugin name="ros_contorl" filename="libgazebo_ros_control.so">
+			<robotNamespace>/dynamixel_arm</robotNamespace>
+		</plugin>
+	</gazebo>
+
+	<gazebo reference="arm_base_link">
+		<material>Gazebo/Orange</material>
+	</gazebo>
+
+	<gazebo reference="link1">
+		<material>Gazebo/Black</material>
+	</gazebo>
+
+	<gazebo reference="link2">
+		<material>Gazebo/Orange</material>
+	</gazebo>
+
+	<gazebo reference="link3">
+		<material>Gazebo/Black</material>
+	</gazebo>
+
+	<gazebo reference="link4">
+		<material>Gazebo/Orange</material>
+	</gazebo>
+
+	<gazebo reference="link5">
+		<material>Gazebo/Black</material>
+	</gazebo>
+
+	<gazebo reference="link6">
+		<material>Gazebo/Orange</material>
+	</gazebo>
+
+	<gazebo reference="link7">
+		<material>Gazebo/Black</material>
+	</gazebo>
+</robot>

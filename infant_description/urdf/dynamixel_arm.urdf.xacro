@@ -1,0 +1,405 @@
+<?xml version="1.0" ?>
+<robot name="dynamixel_arm" xmlns:xacro="http://ros.org/wiki/xacro">
+
+	<!-- constants for robot dimentions -->
+	<xacro:property name="pi" value="3.141592"/>	
+	
+	<!-- inertial for box -->
+	<!--xacro:macro 
+		name="default_box_inertial" 
+		params="mass depth width height x_offset y_offset z_offset">
+		<inertial>
+			<origin xyz="${x_offset} ${y_offset} ${z_offset}" rpy="0 0 0"/>
+			<mass value="${mass}"/>
+			<inertia 
+				ixx="${1/12*mass*(width*width+height*height)}" ixy="0.0" ixz="0.0" 
+				iyy="${1/12*mass*(height*height+depth*depth)}" iyz="0.0" 
+				izz="${1/12*mass*(depth*depth+width*width)}"/>
+		</inertial>
+	</xacro:macro-->
+
+	<!-- inertial for cylinder -->
+	<!--xacro:macro 
+		name="default_cylinder_inertial" 
+		params="mass length radius x_offset y_offset z_offset">
+		<inertial>
+			<origin xyz="${x_offset} ${y_offset} ${z_offset}" rpy="0 0 0"/>
+			<mass value="${mass}"/>
+			<inertia 
+				ixx="${1/12*mass*(3*radius*radius+length*length)}" ixy="0.0" ixz="0.0" 
+				iyy="${1/12*mass*(3*radius*radius+length*length)}" iyz="0.0" 
+				izz="${1/2*mass*radius*radius}"/>
+		</inertial>
+	</xacro:macro-->
+	
+	<!-- inertial for box -->
+	<xacro:macro 
+		name="default_box_inertial" 
+		params="mass depth width height x_offset y_offset z_offset">
+		<inertial>
+			<origin xyz="${x_offset} ${y_offset} ${z_offset}" rpy="0 0 0"/>
+			<mass value="${mass}"/>
+			<inertia 
+				ixx="1.0" ixy="0.0" ixz="0.0" 
+				iyy="1.0" iyz="0.0" 
+				izz="1.0"/>
+		</inertial>
+	</xacro:macro>
+
+	<!-- inertial for cylinder -->
+	<xacro:macro 
+		name="default_cylinder_inertial" 
+		params="mass length radius x_offset y_offset z_offset">
+		<inertial>
+			<origin xyz="${x_offset} ${y_offset} ${z_offset}" rpy="0 0 0"/>
+			<mass value="${mass}"/>
+			<inertia 
+				ixx="1.0" ixy="0.0" ixz="0.0" 
+				iyy="1.0" iyz="0.0" 
+				izz="1.0"/>
+		</inertial>
+	</xacro:macro>
+
+	<!-- import Rviz color -->
+	<xacro:include filename="$(find infant_description)/materials/materials.xacro"/>
+	<!-- import Gazebo -->
+	<xacro:include filename="$(find infant_description)/urdf/dynamixel_arm.gazebo.xacro"/>
+	<link name="world"/>
+	
+	<joint name="fixed" type="fixed">
+		<parent link="world"/>
+		<child link="arm_base_link"/>
+	</joint>
+
+	<!-- Dynamixel Arm -->
+	<!--joint name="arm_base_joint" type="fixed">
+		<parent link="world"/>
+		<child link="arm_base_link"/>
+		<origin xyz="${0.720/2-0.040+0.10} 0 ${0.360/2}" rpy="${pi} 0 0"/>
+	</joint-->
+	
+	<link name="arm_base_link">
+		<visual>
+			<geometry>
+				<cylinder length="0.040" radius="0.040"/>
+			</geometry>
+			<origin xyz="0 0 ${0.040/2}" rpy="0 0 0"/>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<geometry>
+				<cylinder length="0.040" radius="0.040"/>
+			</geometry>
+			<origin xyz="0 0 ${0.040/2}" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_cylinder_inertial
+			mass="0.1" length="0.040" radius="0.040"
+			x_offset="0.0" y_offset="0.0" z_offset="-${0.040/2}"/>
+	</link>
+
+	<joint name="joint1" type="revolute">
+		<parent link="arm_base_link"/>
+		<child link="link1"/>
+		<origin xyz="0 0 ${0.040}" rpy="0 0 0"/>
+		<axis xyz="0 0 1"/>
+		<limit effort="6.0" lower="-${175/180*pi}" upper="${175/180*pi}" velocity="${11/6*pi}"/>
+	</joint>
+
+	<link name="link1">
+		<visual>
+			<geometry>
+				<box size="0.035 0.070 0.050"/>
+			</geometry>
+			<origin xyz="0 0 ${0.050/2}" rpy="0 0 0"/>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.035 0.070 0.050"/>
+			</geometry>
+			<origin xyz="0 0 ${0.050/2}" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_box_inertial
+			mass="0.1" depth="0.035" width="0.070" height="0.050"
+			x_offset="0.31" y_offset="0.0" z_offset="${0.050/2}"/>
+	</link>
+
+	<joint name="joint2" type="revolute">
+		<parent link="link1"/>
+		<child link="link2"/>
+		<origin xyz="0 0 ${0.050}" rpy="0 0 0"/>
+		<axis xyz="0 -1 0"/>
+		<limit effort="${2*6.0}" lower="-${95/180*pi}" upper="${95/180*pi}" velocity="${11/6*pi}"/>
+	</joint>
+
+	<link name="link2">
+		<visual>
+			<geometry>
+				<box size="0.035 0.035 0.150"/>
+			</geometry>
+			<origin xyz="0 0 ${0.150/2}" rpy="0 0 0"/>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.035 0.035 0.150"/>
+			</geometry>
+			<origin xyz="0 0 ${0.150/2}" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_box_inertial
+			mass="0.1" depth="0.035" width="0.035" height="0.150"
+			x_offset="0.0" y_offset="0.0" z_offset="${0.150}"/>
+	</link>
+
+	<joint name="joint3" type="revolute">
+		<parent link="link2"/>
+		<child link="link3"/>
+		<origin xyz="0 0 0.150" rpy="0 0 0"/>
+		<axis xyz="0 -1 0"/>
+		<limit effort="6.0" lower="-${150/180*pi}" upper="${10/180*pi}" velocity="${11/6*pi}"/>
+	</joint>
+
+	<link name="link3">
+		<visual>
+			<geometry>
+				<box size="0.035 0.035 0.060"/>
+			</geometry>
+			<origin xyz="0 0 ${0.060/2}" rpy="0 0 0"/>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.035 0.035 0.060"/>
+			</geometry>
+			<origin xyz="0 0 ${0.060/2}" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_box_inertial 
+			mass="0.1" depth="0.035" width="0.035" height="0.060"
+			x_offset="0.0" y_offset="0.0" z_offset="${0.060}"/>
+	</link>
+		
+	<joint name="joint4" type="revolute">
+		<parent link="link3"/>
+		<child link="link4"/>
+		<origin xyz="0 0 ${0.060}" rpy="0 0 0"/>
+		<axis xyz="0 0 1"/>
+		<limit effort="6.0" lower="-${175/180*pi}" upper="${175/180*pi}" velocity="${11/6*pi}"/>
+	</joint>
+
+	<link name="link4">
+		<visual>
+			<geometry>
+				<box size="0.035 0.035 0.0975"/>
+			</geometry>
+			<origin xyz="0 0 ${0.0975/2}" rpy="0 0 0"/>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="0.035 0.035 0.0975"/>
+			</geometry>
+			<origin xyz="0 0 ${0.0975/2}" rpy="0 0 0"/>
+		</collision>
+		<xacro:default_box_inertial
+			mass="0.1" depth="0.035" width="0.035" height="0.060"
+			x_offset="0.0" y_offset="0.0" z_offset="${0.0975/2}"/>
+	</link>
+
+	<joint name="joint5" type="revolute">
+		<parent link="link4"/>
+		<child link="link5"/>
+		<origin xyz="0 0 ${0.0975}" rpy="0 0 0"/>
+		<axis xyz="0 -1 0"/>
+		<limit effort="6.0" lower="-${95/180*pi}" upper="${95/180*pi}" velocity="${11/6*pi}"/>
+	</joint>
+
+	<link name="link5">
+		<visual>
+			<origin xyz="0 0 ${0.061/2}" rpy="0 0 0" />
+			<geometry>
+				<box size="0.024 0.0475 0.061" />
+			</geometry>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<origin xyz="0 0 ${0.061/2}" rpy="0 0 0" />
+			<geometry>
+				<box size="0.024 0.0475 0.061" />
+			</geometry>
+		</collision>
+			
+
+		<visual>
+			<origin xyz="0 ${0.03295-0.005} ${0.065727241+0.003}" rpy="-0.52359878 0 0" />
+			<geometry>
+				<box size="0.034 0.0014 0.019" />
+			</geometry>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<origin xyz="0 ${0.03295-0.005} ${0.065727241+0.003}" rpy="-0.52359878 0 0" />
+			<geometry>
+				<box size="0.034 0.0014 0.019" />
+			</geometry>
+		</collision>
+
+		<visual>
+			<origin xyz="0 ${0.0377-0.005} ${0.09665+0.003}" rpy="0 0 0" />
+			<geometry>
+				<box size="0.034 0.0014 0.0454" />
+			</geometry>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<origin xyz="0 ${0.0377-0.005} ${0.09665+0.003}" rpy="0 0 0" />
+			<geometry>
+				<box size="0.034 0.0014 0.0454" />
+			</geometry>
+		</collision>
+
+		<xacro:default_box_inertial
+			mass="0.1" depth="0.024" width="0.0475" height="0.061"
+			x_offset="0.0" y_offset="0.0" z_offset="${0.061/2}"/>
+
+	</link>
+
+	<joint name="joint6" type="revolute">
+		<parent link="link5"/>
+		<child link="link6"/>
+		<origin xyz="0 -0.0145 0.045" rpy="0 0 0"/>
+		<axis xyz="-1 0 0"/>
+		<limit effort="6.0" lower="-${40/180*pi}" upper="${20/180*pi}" velocity="${11/6*pi}"/>
+	</joint>
+
+	<link name="link6">
+		<visual>
+			<origin xyz="0 0 0" rpy="0 1.57079632675 0" />
+			<geometry>
+				<cylinder radius="0.012" length="0.0475" />
+			</geometry>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="0 1.57079632675 0" />
+			<geometry>
+				<cylinder radius="0.012" length="0.0475" />
+			</geometry>
+		</collision>
+
+		<visual>
+			<origin xyz="0 -0.013 0" rpy="0 0 0" />
+			<geometry>
+				<box size="0.0475 0.026 0.024" />
+			</geometry>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<origin xyz="0 -0.013 0" rpy="0 0 0" />
+			<geometry>
+				<box size="0.0475 0.026 0.024" />
+			</geometry>
+		</collision>
+
+		<visual>
+			<origin xyz="0 -0.0267 0.023" rpy="0 0 0" />
+			<geometry>
+				<box size="0.034 0.0014 0.070" />
+			</geometry>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<origin xyz="0 -0.0267 0.023" rpy="0 0 0" />
+			<geometry>
+				<box size="0.034 0.0014 0.070" />
+			</geometry>
+		</collision>
+
+		<visual>
+			<origin xyz="0 -0.0166252378 0.07545" rpy="-0.52359878 0 0" />
+			<geometry>
+				<box size="0.034 0.0014 0.040299" />
+			</geometry>
+			<material name="gray"/>
+		</visual>
+		<collision>
+			<origin xyz="0 -0.0166252378 0.07545" rpy="-0.52359878 0 0" />
+			<geometry>
+				<box size="0.034 0.0014 0.040299" />
+			</geometry>
+		</collision>
+
+		<xacro:default_box_inertial 
+			mass="0.1" depth="0.0475" width="0.026" height="0.024"
+			x_offset="0.0" y_offset="0.0" z_offset="0.0"/>
+
+	</link>
+
+	<!-- transmission for Dynamixel Arm-->
+	<transmission name="tran1">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="joint1">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="motor1">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+	<transmission name="tran2">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="joint2">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="motor2">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+	<transmission name="tran3">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="joint3">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="motor3">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+	<transmission name="tran4">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="joint4">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="motor4">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+	<transmission name="tran5">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="joint5">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="motor5">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+	
+	<transmission name="tran6">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="joint6">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="motor6">
+			<hardwareInterface>PositionJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+</robot>
+

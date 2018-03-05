@@ -1,0 +1,36 @@
+<?xml version="1.0" ?>
+<robot name="sample infant">
+	<link name="base_link">
+		<visual>
+			<geometry>
+				<mesh filename="package://infant_description/meshes/asm_infant.dae"/>
+			</geometry>
+			<origin rpy="1.57075 0 3.1415"/>
+		</visual>
+		<collision>
+			<geometry>
+				<box size="1.2 0.9 1.4"/>
+			</geometry>
+			<origin xyz="-0.1 -0.1 0.665"/>
+		</collision>
+		<inertial>
+			<mass value="10"/>
+			<inertia ixx="3.2" ixy="0.0" ixz="0.0" iyy="3.2" iyz="0.0" izz="3.2"/>
+		</inertial>
+	</link>
+
+	<!--gazebo reference="base_link">
+		<material>Gazebo/Blue</material>
+	</gazebo-->
+
+	<gazebo>
+		<plugin name="infant_controller" filename="libgazebo_ros_planar_move.so">
+			<commandTopic>cmd_vel</commandTopic>
+			<odometryTopic>odom</odometryTopic>
+			<odometryFrame>odom</odometryFrame>
+			<odometryRate>20.0</odometryRate>
+			<robotBaseFrame>base_link</robotBaseFrame>
+		</plugin>
+	</gazebo>
+
+</robot>
